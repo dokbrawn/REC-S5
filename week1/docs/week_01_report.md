@@ -35,8 +35,6 @@
 
 ![](assets/animations/tasks_checklist.svg)
 
-За неделю были закрыты все четыре цели: разобрано назначение планировщика радиоресурсов в downlink LTE, структура `SCHEDULER.py` и последовательность работы `schedule()`, использование CQI, буфера, RB/RBG, CCE и расчёта ёмкости через AMC, а также теория и реализация Round Robin, Best CQI, Proportional Fair и FD-вариантов.
-
 ![](assets/separators/02_terminology.svg)
 
 ## Краткая терминология
