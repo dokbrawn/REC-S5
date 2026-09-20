@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+  <defs>
+    <pattern id="pgrid" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0V34" fill="none" stroke="#2a3658" stroke-width="1" opacity="0.22"/>
+    </pattern>
+    <filter id="pglow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="dotGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="45%" stop-color="#4edcff"/>
+      <stop offset="100%" stop-color="#4edcff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="300" rx="18" fill="#0d1222"/>
+  <rect width="1200" height="300" rx="18" fill="url(#pgrid)"/>
+
+  <path d="M130.0,86 L365.0,86 L600.0,86 L835.0,86 L1070.0,86 L1070.0,226 L835.0,226 L600.0,226 L365.0,226" fill="none" stroke="#2a3658" stroke-width="2.5"/>
+  <path d="M130.0,86 L365.0,86 L600.0,86 L835.0,86 L1070.0,86 L1070.0,226 L835.0,226 L600.0,226 L365.0,226" fill="none" stroke="#4edcff" stroke-width="2" stroke-opacity="0.35" stroke-dasharray="2 7"/>
+
+  
+  <g>
+    <rect x="52.0" y="60" width="156" height="52" rx="12" fill="#121935" stroke="#4edcff" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="52.0" y="60" width="156" height="52" rx="12" fill="#4edcff" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="0.0s;9.0s" dur="0.9s"/>
+    </rect>
+    <circle cx="130.0" cy="60" r="0" fill="none" stroke="#4edcff" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="0.0s;9.0s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="0.0s;9.0s" dur="0.9s"/>
+      <animate attributeName="cy" from="86" to="86" begin="0.0s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="82">
+      <tspan x="130.0" dy="0">Входной</tspan><tspan x="130.0" dy="15">список UE</tspan>
+    </text>
+    <text x="60.0" y="54" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#4edcff" opacity="0.7">01</text>
+  </g>
+  <g>
+    <rect x="287.0" y="60" width="156" height="52" rx="12" fill="#121935" stroke="#4edcff" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="287.0" y="60" width="156" height="52" rx="12" fill="#4edcff" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="1.125s;10.125s" dur="0.9s"/>
+    </rect>
+    <circle cx="365.0" cy="60" r="0" fill="none" stroke="#4edcff" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="1.125s;10.125s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="1.125s;10.125s" dur="0.9s"/>
+      <animate attributeName="cy" from="86" to="86" begin="1.125s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="82">
+      <tspan x="365.0" dy="0">Проверка буфера</tspan><tspan x="365.0" dy="15">/ CQI</tspan>
+    </text>
+    <text x="295.0" y="54" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#4edcff" opacity="0.7">02</text>
+  </g>
+  <g>
+    <rect x="522.0" y="60" width="156" height="52" rx="12" fill="#121935" stroke="#4edcff" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="522.0" y="60" width="156" height="52" rx="12" fill="#4edcff" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="2.25s;11.25s" dur="0.9s"/>
+    </rect>
+    <circle cx="600.0" cy="60" r="0" fill="none" stroke="#4edcff" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="2.25s;11.25s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="2.25s;11.25s" dur="0.9s"/>
+      <animate attributeName="cy" from="86" to="86" begin="2.25s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="82">
+      <tspan x="600.0" dy="0">Активное окно</tspan>
+    </text>
+    <text x="530.0" y="54" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#4edcff" opacity="0.7">03</text>
+  </g>
+  <g>
+    <rect x="757.0" y="60" width="156" height="52" rx="12" fill="#121935" stroke="#b88cff" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="757.0" y="60" width="156" height="52" rx="12" fill="#b88cff" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="3.375s;12.375s" dur="0.9s"/>
+    </rect>
+    <circle cx="835.0" cy="60" r="0" fill="none" stroke="#b88cff" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="3.375s;12.375s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="3.375s;12.375s" dur="0.9s"/>
+      <animate attributeName="cy" from="86" to="86" begin="3.375s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="82">
+      <tspan x="835.0" dy="0">Расчёт</tspan><tspan x="835.0" dy="15">приоритетов</tspan>
+    </text>
+    <text x="765.0" y="54" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#b88cff" opacity="0.7">04</text>
+  </g>
+  <g>
+    <rect x="992.0" y="60" width="156" height="52" rx="12" fill="#121935" stroke="#b88cff" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="992.0" y="60" width="156" height="52" rx="12" fill="#b88cff" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="4.5s;13.5s" dur="0.9s"/>
+    </rect>
+    <circle cx="1070.0" cy="60" r="0" fill="none" stroke="#b88cff" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="4.5s;13.5s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="4.5s;13.5s" dur="0.9s"/>
+      <animate attributeName="cy" from="86" to="86" begin="4.5s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="82">
+      <tspan x="1070.0" dy="0">Priority list</tspan>
+    </text>
+    <text x="1000.0" y="54" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#b88cff" opacity="0.7">05</text>
+  </g>
+  <g>
+    <rect x="992.0" y="200" width="156" height="52" rx="12" fill="#121935" stroke="#7de3b2" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="992.0" y="200" width="156" height="52" rx="12" fill="#7de3b2" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="5.625s;14.625s" dur="0.9s"/>
+    </rect>
+    <circle cx="1070.0" cy="200" r="0" fill="none" stroke="#7de3b2" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="5.625s;14.625s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="5.625s;14.625s" dur="0.9s"/>
+      <animate attributeName="cy" from="226" to="226" begin="5.625s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="222">
+      <tspan x="1070.0" dy="0">Оценка PDSCH</tspan>
+    </text>
+    <text x="1000.0" y="194" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#7de3b2" opacity="0.7">06</text>
+  </g>
+  <g>
+    <rect x="757.0" y="200" width="156" height="52" rx="12" fill="#121935" stroke="#7de3b2" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="757.0" y="200" width="156" height="52" rx="12" fill="#7de3b2" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="6.75s;15.75s" dur="0.9s"/>
+    </rect>
+    <circle cx="835.0" cy="200" r="0" fill="none" stroke="#7de3b2" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="6.75s;15.75s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="6.75s;15.75s" dur="0.9s"/>
+      <animate attributeName="cy" from="226" to="226" begin="6.75s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="222">
+      <tspan x="835.0" dy="0">PDCCH / CCE</tspan>
+    </text>
+    <text x="765.0" y="194" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#7de3b2" opacity="0.7">07</text>
+  </g>
+  <g>
+    <rect x="522.0" y="200" width="156" height="52" rx="12" fill="#121935" stroke="#ffb86b" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="522.0" y="200" width="156" height="52" rx="12" fill="#ffb86b" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="7.875s;16.875s" dur="0.9s"/>
+    </rect>
+    <circle cx="600.0" cy="200" r="0" fill="none" stroke="#ffb86b" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="7.875s;16.875s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="7.875s;16.875s" dur="0.9s"/>
+      <animate attributeName="cy" from="226" to="226" begin="7.875s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="222">
+      <tspan x="600.0" dy="0">PDSCH / RBG</tspan>
+    </text>
+    <text x="530.0" y="194" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#ffb86b" opacity="0.7">08</text>
+  </g>
+  <g>
+    <rect x="287.0" y="200" width="156" height="52" rx="12" fill="#121935" stroke="#ffb86b" stroke-width="1.6" stroke-opacity="0.55"/>
+    <rect x="287.0" y="200" width="156" height="52" rx="12" fill="#ffb86b" opacity="0">
+      <animate attributeName="opacity" values="0;0.16;0" begin="9.0s;18.0s" dur="0.9s"/>
+    </rect>
+    <circle cx="365.0" cy="200" r="0" fill="none" stroke="#ffb86b" stroke-width="2">
+      <animate attributeName="r" values="0;92" begin="9.0s;18.0s" dur="0.9s"/>
+      <animate attributeName="opacity" values="0.7;0" begin="9.0s;18.0s" dur="0.9s"/>
+      <animate attributeName="cy" from="226" to="226" begin="9.0s" dur="0.01s"/>
+    </circle>
+    <text text-anchor="middle" font-family="Inter, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#dbe3ff" y="222">
+      <tspan x="365.0" dy="0">Буфер /</tspan><tspan x="365.0" dy="15">статистика</tspan>
+    </text>
+    <text x="295.0" y="194" font-family="Inter, DejaVu Sans, sans-serif" font-size="11" font-weight="800" fill="#ffb86b" opacity="0.7">09</text>
+  </g>
+
+  <circle r="9" fill="url(#dotGrad)" filter="url(#pglow)">
+    <animateMotion path="M130.0,86 L365.0,86 L600.0,86 L835.0,86 L1070.0,86 L1070.0,226 L835.0,226 L600.0,226 L365.0,226" dur="9.0s" repeatCount="indefinite" rotate="auto"/>
+  </circle>
+
+  <text x="20" y="284" font-family="Inter, DejaVu Sans, sans-serif" font-size="12" font-weight="600" letter-spacing="2" fill="#5b6b91">SCHEDULE(TTI, USERS) · ОДИН ПОЛНЫЙ ПРОХОД TTI</text>
+  <rect x="0" y="0" width="1200" height="300" rx="18" fill="none" stroke="#2a3658" stroke-width="1.5"/>
+</svg>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="120" viewBox="0 0 900 120">
+  <defs>
+    <pattern id="grid04" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0V34" fill="none" stroke="#2a3658" stroke-width="1" opacity="0.28"/>
+    </pattern>
+    <linearGradient id="edge04" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4edcff" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#4edcff" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="sheen04" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4edcff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#4edcff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#4edcff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow04" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4.5" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="clip04">
+      <rect width="900" height="120" rx="18"/>
+    </clipPath>
+    <style><![CDATA[
+      .accent04{animation:pulse04 2.6s ease-in-out infinite alternate}
+      @keyframes pulse04{from{opacity:.55}to{opacity:1}}
+      .sheen04{animation:sweep04 5.5s linear infinite}
+      @keyframes sweep04{from{transform:translateX(-260px)}to{transform:translateX(900px)}}
+      .num04{animation:breathe04 3.4s ease-in-out infinite}
+      @keyframes breathe04{0%,100%{opacity:.08}50%{opacity:.16}}
+    ]]></style>
+  </defs>
+
+  <g clip-path="url(#clip04)">
+    <rect width="900" height="120" fill="#0d1222"/>
+    <rect width="900" height="120" fill="url(#grid04)"/>
+    <text class="num04" x="864" y="110" text-anchor="end" font-family="Georgia, 'Times New Roman', serif" font-size="104" font-weight="800" fill="#4edcff" opacity="0.12">04</text>
+    <rect class="sheen04" x="0" y="0" width="220" height="120" fill="url(#sheen04)"/>
+  </g>
+
+  <rect class="accent04" x="0" y="18" width="7" height="84" rx="3.5" fill="url(#edge04)"/>
+
+  <text x="42" y="46" font-family="Inter, DejaVu Sans, sans-serif" font-size="15" font-weight="700" letter-spacing="3.5" fill="#6c7aa0">РАЗДЕЛ 04</text>
+  <text x="42" y="86" font-family="Inter, DejaVu Sans, sans-serif" font-size="32" font-weight="800" letter-spacing="0.5" fill="#4edcff" filter="url(#glow04)">АРХИТЕКТУРА SCHEDULER.PY</text>
+
+  <rect x="0" y="0" width="900" height="120" rx="18" fill="none" stroke="#4edcff" stroke-opacity="0.22" stroke-width="1.5"/>
+</svg>

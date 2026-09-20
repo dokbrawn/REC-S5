@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="350" viewBox="0 0 1200 350">
+<defs>
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#2a3658" stroke-width="1" opacity="0.22"/></pattern>
+  <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1200" height="350" fill="#0d1222"/>
+<rect width="1200" height="350" fill="url(#grid)"/>
+
+<text x="70" y="165" fill="#e6ecff" font-family="DejaVu Sans" font-size="48px" font-weight="700" text-anchor="start">PF =</text><text x="330" y="118" fill="#4edcff" font-family="DejaVu Sans" font-size="32px" font-weight="600" text-anchor="middle">instant_rate</text><line x1="185" y1="145" x2="475" y2="145" stroke="#7f8eb0" stroke-width="3"/><text x="330" y="200" fill="#b88cff" font-family="DejaVu Sans" font-size="27px" font-weight="600" text-anchor="middle">average_throughput / 1000</text><text x="555" y="118" fill="#9aa9c8" font-family="DejaVu Sans" font-size="21px" font-weight="400" text-anchor="start">текущая оценка скорости</text><text x="555" y="150" fill="#9aa9c8" font-family="DejaVu Sans" font-size="21px" font-weight="400" text-anchor="start">делится на накопленную историю</text><text x="70" y="285" fill="#e6ecff" font-family="DejaVu Sans" font-size="27px" font-weight="500" text-anchor="start">instant_rate = rb_per_slot × bits_per_rb</text></svg>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="120" viewBox="0 0 900 120">
+  <defs>
+    <pattern id="grid11" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0V34" fill="none" stroke="#2a3658" stroke-width="1" opacity="0.28"/>
+    </pattern>
+    <linearGradient id="edge11" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4edcff" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#4edcff" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="sheen11" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4edcff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#4edcff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#4edcff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow11" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4.5" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="clip11">
+      <rect width="900" height="120" rx="18"/>
+    </clipPath>
+    <style><![CDATA[
+      .accent11{animation:pulse11 2.6s ease-in-out infinite alternate}
+      @keyframes pulse11{from{opacity:.55}to{opacity:1}}
+      .sheen11{animation:sweep11 5.5s linear infinite}
+      @keyframes sweep11{from{transform:translateX(-260px)}to{transform:translateX(900px)}}
+      .num11{animation:breathe11 3.4s ease-in-out infinite}
+      @keyframes breathe11{0%,100%{opacity:.08}50%{opacity:.16}}
+    ]]></style>
+  </defs>
+
+  <g clip-path="url(#clip11)">
+    <rect width="900" height="120" fill="#0d1222"/>
+    <rect width="900" height="120" fill="url(#grid11)"/>
+    <text class="num11" x="864" y="110" text-anchor="end" font-family="Georgia, 'Times New Roman', serif" font-size="104" font-weight="800" fill="#4edcff" opacity="0.12">11</text>
+    <rect class="sheen11" x="0" y="0" width="220" height="120" fill="url(#sheen11)"/>
+  </g>
+
+  <rect class="accent11" x="0" y="18" width="7" height="84" rx="3.5" fill="url(#edge11)"/>
+
+  <text x="42" y="46" font-family="Inter, DejaVu Sans, sans-serif" font-size="15" font-weight="700" letter-spacing="3.5" fill="#6c7aa0">РАЗДЕЛ 11</text>
+  <text x="42" y="86" font-family="Inter, DejaVu Sans, sans-serif" font-size="32" font-weight="800" letter-spacing="0.5" fill="#4edcff" filter="url(#glow11)">ИТОГИ НЕДЕЛИ</text>
+
+  <rect x="0" y="0" width="900" height="120" rx="18" fill="none" stroke="#4edcff" stroke-opacity="0.22" stroke-width="1.5"/>
+</svg>

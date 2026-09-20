@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="316" viewBox="0 0 900 316">
+  <rect width="900" height="316" rx="16" fill="#0d1222"/>
+  <rect x="0" y="0" width="900" height="316" rx="16" fill="none" stroke="#232c4d" stroke-width="1.5"/>
+  
+  
+  <text x="40" y="58.0" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="400" fill="#4edcff" opacity="0.85">01</text>
+  <text x="108" y="40.0" font-family="Georgia, 'Times New Roman', serif" font-size="19" fill="#dbe3ff">Назначение планировщика радиоресурсов в</text><text x="108" y="64.0" font-family="Georgia, 'Times New Roman', serif" font-size="19" fill="#dbe3ff">downlink LTE</text>
+  <line x1="40" y1="82" x2="860" y2="82" stroke="#232c4d" stroke-width="1"/>
+  <text x="40" y="134.0" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="400" fill="#b88cff" opacity="0.85">02</text>
+  <text x="108" y="116.0" font-family="Georgia, 'Times New Roman', serif" font-size="19" fill="#dbe3ff">Структура SCHEDULER.py и последовательность</text><text x="108" y="140.0" font-family="Georgia, 'Times New Roman', serif" font-size="19" fill="#dbe3ff">работы schedule()</text>
+  <line x1="40" y1="158" x2="860" y2="158" stroke="#232c4d" stroke-width="1"/>
+  <text x="40" y="210.0" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="400" fill="#7de3b2" opacity="0.85">03</text>
+  <text x="108" y="192.0" font-family="Georgia, 'Times New Roman', serif" font-size="19" fill="#dbe3ff">Использование CQI, буфера, RB/RBG, CCE и</text><text x="108" y="216.0" font-family="Georgia, 'Times New Roman', serif" font-size="19" fill="#dbe3ff">расчёта ёмкости через AMC</text>
+  <line x1="40" y1="234" x2="860" y2="234" stroke="#232c4d" stroke-width="1"/>
+  <text x="40" y="286.0" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="400" fill="#ffb86b" opacity="0.85">04</text>
+  <text x="108" y="268.0" font-family="Georgia, 'Times New Roman', serif" font-size="19" fill="#dbe3ff">Теория и реализация Round Robin, Best CQI,</text><text x="108" y="292.0" font-family="Georgia, 'Times New Roman', serif" font-size="19" fill="#dbe3ff">Proportional Fair и FD-вариантов</text>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
+<defs>
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#2a3658" stroke-width="1" opacity="0.22"/></pattern>
+  <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4edcff"/></marker>
+</defs>
+<rect width="1200" height="650" fill="#0d1222"/>
+<rect width="1200" height="650" fill="url(#grid)"/>
+
+<rect x="55" y="90" width="235" height="120" rx="18" fill="#151c31" stroke="#4edcff" stroke-width="2"/>
+<text x="172.5" y="133" fill="#e6ecff" font-family="DejaVu Sans" font-size="26px" font-weight="600" text-anchor="middle">CQI UE</text>
+<text x="172.5" y="166" fill="#9aa9c8" font-family="DejaVu Sans" font-size="18px" font-weight="400" text-anchor="middle">например, CQI = 10</text>
+
+<rect x="330" y="90" width="250" height="120" rx="18" fill="#151c31" stroke="#ffb86b" stroke-width="2"/>
+<text x="455" y="133" fill="#e6ecff" font-family="DejaVu Sans" font-size="26px" font-weight="600" text-anchor="middle">PDCCH</text>
+<text x="455" y="166" fill="#9aa9c8" font-family="DejaVu Sans" font-size="18px" font-weight="400" text-anchor="middle">CQI → 2 CCE</text>
+
+<rect x="620" y="90" width="235" height="120" rx="18" fill="#151c31" stroke="#b88cff" stroke-width="2"/>
+<text x="737.5" y="133" fill="#e6ecff" font-family="DejaVu Sans" font-size="26px" font-weight="600" text-anchor="middle">AMC</text>
+<text x="737.5" y="166" fill="#9aa9c8" font-family="DejaVu Sans" font-size="18px" font-weight="400" text-anchor="middle">CQI → MCS</text>
+
+<rect x="895" y="90" width="250" height="120" rx="18" fill="#151c31" stroke="#7de3b2" stroke-width="2"/>
+<text x="1020" y="133" fill="#e6ecff" font-family="DejaVu Sans" font-size="26px" font-weight="600" text-anchor="middle">PDSCH</text>
+<text x="1020" y="166" fill="#9aa9c8" font-family="DejaVu Sans" font-size="18px" font-weight="400" text-anchor="middle">RBG → данные</text>
+
+<line x1="290" y1="150" x2="330" y2="150" stroke="#4edcff" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="580" y1="150" x2="620" y2="150" stroke="#4edcff" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="855" y1="150" x2="895" y2="150" stroke="#4edcff" stroke-width="3" marker-end="url(#arrow)"/>
+
+<rect x="55" y="280" width="345" height="150" rx="18" fill="#121935" stroke="#ffb86b" stroke-width="1.5" stroke-opacity="0.7"/>
+<text x="82" y="316" fill="#ffb86b" font-family="DejaVu Sans" font-size="22px" font-weight="700">PDCCH</text>
+<text x="82" y="352" fill="#9aa9c8" font-family="DejaVu Sans" font-size="17px">
+  <tspan x="82" dy="0">Управляющий ресурс для</tspan>
+  <tspan x="82" dy="26">назначения UE.</tspan>
+</text>
+
+<rect x="428" y="280" width="345" height="150" rx="18" fill="#121935" stroke="#b88cff" stroke-width="1.5" stroke-opacity="0.7"/>
+<text x="455" y="316" fill="#b88cff" font-family="DejaVu Sans" font-size="22px" font-weight="700">AMC</text>
+<text x="455" y="352" fill="#9aa9c8" font-family="DejaVu Sans" font-size="17px">
+  <tspan x="455" dy="0">Оценка ёмкости RB по CQI,</tspan>
+  <tspan x="455" dy="26">модуляции и code rate.</tspan>
+</text>
+
+<rect x="801" y="280" width="344" height="150" rx="18" fill="#121935" stroke="#7de3b2" stroke-width="1.5" stroke-opacity="0.7"/>
+<text x="828" y="316" fill="#7de3b2" font-family="DejaVu Sans" font-size="22px" font-weight="700">PDSCH</text>
+<text x="828" y="352" fill="#9aa9c8" font-family="DejaVu Sans" font-size="17px">
+  <tspan x="828" dy="0">Фактическое заполнение</tspan>
+  <tspan x="828" dy="26">выбранными RBG.</tspan>
+</text>
+
+<text x="600" y="505" fill="#9aa9c8" font-family="DejaVu Sans" font-size="19px" text-anchor="middle">
+  В коде PDCCHManager и AdaptiveModulationAndCoding отвечают
+</text>
+<text x="600" y="536" fill="#9aa9c8" font-family="DejaVu Sans" font-size="19px" text-anchor="middle">
+  за управляющий ресурс и расчёт ёмкости, а scheduler выполняет allocation.
+</text>
+</svg>

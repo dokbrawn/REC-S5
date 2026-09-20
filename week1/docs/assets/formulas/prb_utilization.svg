@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="330" viewBox="0 0 1000 330">
+<defs>
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#2a3658" stroke-width="1" opacity="0.22"/></pattern>
+  <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1000" height="330" fill="#0d1222"/>
+<rect width="1000" height="330" fill="url(#grid)"/>
+
+<text x="70" y="145" fill="#e6ecff" font-family="DejaVu Sans" font-size="42px" font-weight="700" text-anchor="start">PRB Util =</text><text x="395" y="118" fill="#4edcff" font-family="DejaVu Sans" font-size="31px" font-weight="600" text-anchor="middle">занятые PRB</text><text x="395" y="168" fill="#9aa9c8" font-family="DejaVu Sans" font-size="27px" font-weight="400" text-anchor="middle">────────────</text><text x="395" y="215" fill="#b88cff" font-family="DejaVu Sans" font-size="31px" font-weight="600" text-anchor="middle">доступные PRB</text><text x="555" y="150" fill="#7de3b2" font-family="DejaVu Sans" font-size="35px" font-weight="600" text-anchor="start">× 100%</text><text x="70" y="285" fill="#e6ecff" font-family="DejaVu Sans" font-size="24px" font-weight="400" text-anchor="start">Доля ресурса, занятого передачей данных в текущем TTI.</text></svg>
