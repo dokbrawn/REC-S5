@@ -195,7 +195,6 @@ avg_throughput_per_tti = avg_throughput / 1000
 pf_metric = instant_rate / avg_throughput_per_tti
 ```
 
-То есть для чтения именно этого файла полезно отдельно держать в голове теоретическую форму `r/R` и реальную реализацию `instant_rate / (average_throughput / 1000)`. Они описывают одну идею, но выражены в коде с его текущими единицами измерения и масштабированием.
 
 ![](assets/separators/04_architecture.svg)
 
