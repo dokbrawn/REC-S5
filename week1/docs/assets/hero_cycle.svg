@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="300" viewBox="0 0 1600 300">
+  <defs>
+    <pattern id="hgrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#2a3658" stroke-width="1" opacity=".26"/>
+      <animateTransform attributeName="patternTransform" type="translate" from="0 0" to="40 40" dur="9s" repeatCount="indefinite"/>
+    </pattern>
+    <radialGradient id="hbg" cx="78%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#1b2648"/><stop offset="55%" stop-color="#0d1222"/><stop offset="100%" stop-color="#0a0e1c"/>
+    </radialGradient>
+    <linearGradient id="htitle" x1="0" x2="1">
+      <stop offset="0" stop-color="#4edcff"/><stop offset=".6" stop-color="#d9d0ff"/><stop offset="1" stop-color="#b88cff"/>
+    </linearGradient>
+    <linearGradient id="hbar" x1="0" x2="1">
+      <stop offset="0" stop-color="#4edcff"/><stop offset="1" stop-color="#b88cff"/>
+    </linearGradient>
+    <filter id="hglow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1600" height="300" fill="url(#hbg)"/>
+  <rect width="1600" height="300" fill="url(#hgrid)"/>
+  <text x="90" y="92" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="27" font-weight="800" letter-spacing="9" fill="#6c7aa0">WEEK 02</text>
+  <text x="88" y="178" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="72" font-weight="900" fill="url(#htitle)" filter="url(#hglow)">ПОЛНЫЙ SCHEDULING CYCLE</text>
+  <text x="90" y="234" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="33" font-weight="700" fill="#9aa7c7">и весь код модуля SCHEDULER.py</text>
+  <rect x="90" y="256" width="560" height="6" rx="3" fill="url(#hbar)">
+    <animate attributeName="width" values="120;560;120" dur="7s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="0" y="0" width="1600" height="300" fill="none" stroke="#4edcff" stroke-opacity="0.18" stroke-width="2"/>
+</svg>

@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1900" viewBox="0 0 1560 1900">
+  <defs><filter id="csglow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <rect width="1560" height="1900" rx="20" fill="#0d1222"/>
+  <rect width="1560" height="1900" rx="20" fill="none" stroke="#b88cff" stroke-opacity=".25"/>
+  <text x="60" y="66" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="32" font-weight="900" fill="#b88cff" filter="url(#csglow)">СХЕМА ВЫЗОВОВ schedule(tti, users) — SCHEDULER.py:340</text>
+  <text x="60" y="104" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="18" fill="#9aa7c7">вход: SIMULATION_MANAGER.run_tti :1535 · users = GET_USERS_FOR_SCHEDULER (UE_MODULE.py:901)</text>
+  <text x="60" y="134" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" fill="#6c7aa0">* — виртуальные методы (здесь реализация BestCQI). Слева — фазы цикла. Теги справа — внешние вызовы и точки состояния.</text>
+  <line x1="118" y1="180" x2="118" y2="1790" stroke="#2a3658" stroke-width="2"/>
+  <circle cx="118" cy="180" r="6" fill="#7de3b2" opacity="0.9"><animate attributeName="cy" values="180;1780" dur="6.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.95;1" dur="6.6s" repeatCount="indefinite"/></circle>
+  <g>
+      <circle cx="118" cy="244" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="0.0s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="0.0s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="251" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">0</text>
+      <line x1="118" y1="270" x2="118" y2="340" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="210" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="0.0s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="240" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_refresh_cqi :498</text>
+      <text x="182" y="268" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">users[cqi], [sbb_cqi] → self.cqi_map</text>
+      <text x="182" y="298" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ cqi_map[ueid] создан/обновлён</text>
+    </g><g><rect x="700" y="219" width="116.30000000000001" height="24" rx="7" fill="#101830" stroke="#7de3b2" stroke-opacity=".55"/><text x="758.15" y="236" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#7de3b2">CQIMap :189</text></g><g>
+      <circle cx="118" cy="374" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="0.55s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="0.55s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="381" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">1</text>
+      <line x1="118" y1="400" x2="118" y2="470" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="340" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="0.55s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="370" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_filter_eligible_ues :553</text>
+      <text x="182" y="398" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">буфер&gt;0 и WB CQI 1..15 → eligible</text>
+      <text x="182" y="428" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ user[bs_buffer_size]; throughput сброшен</text>
+    </g><g><rect x="700" y="349" width="302.3" height="24" rx="7" fill="#101830" stroke="#ffb347" stroke-opacity=".55"/><text x="851.15" y="366" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ffb347">bs.buffer_manager.ue_has_buffer</text></g><g><rect x="1012.3" y="349" width="172.10000000000002" height="24" rx="7" fill="#101830" stroke="#ffb347" stroke-opacity=".55"/><text x="1098.35" y="366" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ffb347">get_buffer_status</text></g><g><rect x="1194.4" y="349" width="255.8" height="24" rx="7" fill="#101830" stroke="#b88cff" stroke-opacity=".55"/><text x="1322.3000000000002" y="366" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#b88cff">ue.current_dl_throughput=0</text></g><g>
+      <circle cx="118" cy="504" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="1.1s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="1.1s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="511" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">2</text>
+      <line x1="118" y1="530" x2="118" y2="600" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="470" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="1.1s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="500" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_update_active_window :604</text>
+      <text x="182" y="528" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">FIFO-очередь активных UE</text>
+      <text x="182" y="558" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ новые в конец, ушедшие удалены</text>
+    </g><g><rect x="700" y="479" width="97.7" height="24" rx="7" fill="#101830" stroke="#7de3b2" stroke-opacity=".55"/><text x="748.85" y="496" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#7de3b2">_ue_queue</text></g><g>
+      <circle cx="118" cy="634" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="1.6500000000000001s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="1.6500000000000001s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="641" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">2.5</text>
+      <line x1="118" y1="660" x2="118" y2="730" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="600" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="1.6500000000000001s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="630" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">filter_by_window :647</text>
+      <text x="182" y="658" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">первые window_size из очереди</text>
+      <text x="182" y="688" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ windowed_ues; очередь повёрнута</text>
+    </g><g><rect x="700" y="609" width="172.10000000000002" height="24" rx="7" fill="#101830" stroke="#7de3b2" stroke-opacity=".55"/><text x="786.05" y="626" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#7de3b2">_ue_queue ротация</text></g><g>
+      <circle cx="118" cy="764" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="2.2s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="2.2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="771" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">3</text>
+      <line x1="118" y1="790" x2="118" y2="860" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="730" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="2.2s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="760" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_calculate_priorities* :1142</text>
+      <text x="182" y="788" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">BestCQI :1878 — priority = WB CQI</text>
+      <text x="182" y="818" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ user[priority] у каждого</text>
+    </g><g><rect x="700" y="739" width="265.1" height="24" rx="7" fill="#101830" stroke="#7de3b2" stroke-opacity=".55"/><text x="832.55" y="756" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#7de3b2">_get_wb_cqi :1034 → cqi_map</text></g><g>
+      <circle cx="118" cy="894" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="2.75s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="2.75s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="901" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">4</text>
+      <line x1="118" y1="920" x2="118" y2="990" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="860" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="2.75s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="890" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_form_priority_list :678</text>
+      <text x="182" y="918" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">sort desc + top-N (max_dl_ue_tti)</text>
+      <text x="182" y="948" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ priority_list</text>
+    </g><g>
+      <circle cx="118" cy="1024" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="3.3000000000000003s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="3.3000000000000003s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="1031" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">4.5</text>
+      <line x1="118" y1="1050" x2="118" y2="1120" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="990" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="3.3000000000000003s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="1020" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_apply_pdsch_estimation :706</text>
+      <text x="182" y="1048" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">оценка RB по буферу; порог 95%</text>
+      <text x="182" y="1078" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ хвост списка отсечён</text>
+    </g><g><rect x="700" y="999" width="246.50000000000003" height="24" rx="7" fill="#101830" stroke="#ffe066" stroke-opacity=".55"/><text x="823.25" y="1016" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ffe066">amc.GET_BITS_PER_RB :1700</text></g><g>
+      <circle cx="118" cy="1154" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="3.8500000000000005s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="3.8500000000000005s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="1161" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">5</text>
+      <line x1="118" y1="1180" x2="118" y2="1250" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="1120" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="3.8500000000000005s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="1150" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_allocate_pdcch :763</text>
+      <text x="182" y="1178" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">CCE по aggregation level (CQI→1/2/4/8)</text>
+      <text x="182" y="1208" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ num_assigned_cce, cce_allocations, user[allocated_cce]</text>
+    </g><g><rect x="700" y="1129" width="209.3" height="24" rx="7" fill="#101830" stroke="#ff8cc8" stroke-opacity=".55"/><text x="804.65" y="1146" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ff8cc8">pdcch.reset_tti :1515</text></g><g><rect x="919.3" y="1129" width="265.1" height="24" rx="7" fill="#101830" stroke="#ff8cc8" stroke-opacity=".55"/><text x="1051.85" y="1146" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ff8cc8">get_aggregation_level :1386</text></g><g><rect x="1194.4" y="1129" width="181.4" height="24" rx="7" fill="#101830" stroke="#ff8cc8" stroke-opacity=".55"/><text x="1285.1000000000001" y="1146" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ff8cc8">allocate_cce :1466</text></g><g>
+      <circle cx="118" cy="1284" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="4.4s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="4.4s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="1291" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">6</text>
+      <line x1="118" y1="1310" x2="118" y2="1380" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="1250" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="4.4s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="1280" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_allocate_pdsch* :1167</text>
+      <text x="182" y="1308" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">BestCQI :1901 — жадно по RBG, первым с буфером</text>
+      <text x="182" y="1338" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ RB заняты в сетке; allocation{UE_ID:[freq_idx]}</text>
+    </g><g><rect x="700" y="1259" width="255.8" height="24" rx="7" fill="#101830" stroke="#4edcff" stroke-opacity=".55"/><text x="827.9" y="1276" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#4edcff">lte_grid.GET_RBG_SIZE :421</text></g><g><rect x="965.8" y="1259" width="172.10000000000002" height="24" rx="7" fill="#101830" stroke="#4edcff" stroke-opacity=".55"/><text x="1051.85" y="1276" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#4edcff">ALLOCATE_RBG :430</text></g><g><rect x="1147.9" y="1259" width="200.0" height="24" rx="7" fill="#101830" stroke="#4edcff" stroke-opacity=".55"/><text x="1247.9" y="1276" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#4edcff">GET_RBG_INDICES :424</text></g><g>
+      <circle cx="118" cy="1414" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="4.95s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="4.95s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="1421" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">7</text>
+      <line x1="118" y1="1440" x2="118" y2="1510" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="1380" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="4.95s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="1410" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_process_buffers :874</text>
+      <text x="182" y="1438" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">ёмкость RB → гранты → извлечение пакетов</text>
+      <text x="182" y="1468" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ буфер BS уменьшен; current/average throughput, last/total bits</text>
+    </g><g><rect x="700" y="1389" width="330.20000000000005" height="24" rx="7" fill="#101830" stroke="#7de3b2" stroke-opacity=".55"/><text x="865.1" y="1406" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#7de3b2">_logical_channel_multiplexing :805</text></g><g><rect x="1040.2" y="1389" width="200.0" height="24" rx="7" fill="#101830" stroke="#7de3b2" stroke-opacity=".55"/><text x="1140.2" y="1406" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#7de3b2">SchedulingGrant :115</text></g><g><rect x="700" y="1419" width="255.8" height="24" rx="7" fill="#101830" stroke="#ffb347" stroke-opacity=".55"/><text x="827.9" y="1436" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ffb347">buffer_manager.get_packets</text></g><g><rect x="965.8" y="1419" width="283.70000000000005" height="24" rx="7" fill="#101830" stroke="#b88cff" stroke-opacity=".55"/><text x="1107.65" y="1436" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#b88cff">ue.UPD_DL_THROUGHPUT_BPS :629</text></g><g><rect x="1259.5" y="1419" width="209.3" height="24" rx="7" fill="#101830" stroke="#9aa7c7" stroke-opacity=".55"/><text x="1364.15" y="1436" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#9aa7c7">GLOBALS.bytes_to_bits</text></g><g>
+      <circle cx="118" cy="1544" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="5.5s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="5.5s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="1551" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">7.5</text>
+      <line x1="118" y1="1570" x2="118" y2="1640" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="1510" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="5.5s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="1540" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_update_stats :1074</text>
+      <text x="182" y="1568" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">счётчики TTI + тайминги</text>
+      <text x="182" y="1598" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ ~15 полей _last_*</text>
+    </g><g><rect x="700" y="1519" width="237.20000000000002" height="24" rx="7" fill="#101830" stroke="#7de3b2" stroke-opacity=".55"/><text x="818.6" y="1536" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#7de3b2">_save_timing_stats :1124</text></g><g>
+      <circle cx="118" cy="1674" r="26" fill="#101830" stroke="#7de3b2" stroke-opacity=".7" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6.6s" begin="6.050000000000001s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="1.5;3;1.5" dur="6.6s" begin="6.050000000000001s" repeatCount="indefinite"/>
+      </circle>
+      <text x="118" y="1681" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="800" fill="#7de3b2">8</text>
+      <line x1="118" y1="1700" x2="118" y2="1770" stroke="#2a3658" stroke-width="2"/>
+      <rect x="160" y="1640" width="1340" height="106" rx="14" fill="#101830" fill-opacity=".75" stroke="#2a3658" stroke-width="1.5">
+        <animate attributeName="stroke" values="#2a3658;#7de3b2;#2a3658" dur="6.6s" begin="6.050000000000001s" repeatCount="indefinite"/>
+      </rect>
+      <text x="182" y="1670" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="21" font-weight="800" fill="#e8eeff">_build_result :966</text>
+      <text x="182" y="1698" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">итоговый Dict</text>
+      <text x="182" y="1728" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="600" fill="#6c7aa0">→ {allocation, statistics:{}, bitmap, pdcch_stats}</text>
+    </g><g><rect x="700" y="1649" width="283.70000000000005" height="24" rx="7" fill="#101830" stroke="#4edcff" stroke-opacity=".55"/><text x="841.85" y="1666" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#4edcff">lte_grid.GENERATE_BITMAP :567</text></g><g><rect x="993.7" y="1649" width="209.3" height="24" rx="7" fill="#101830" stroke="#ff8cc8" stroke-opacity=".55"/><text x="1098.3500000000001" y="1666" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ff8cc8">pdcch.get_stats :1630</text></g><g>
+      <path d="M82 218 H70 V698 H82" fill="none" stroke="#7de3b2" stroke-opacity=".55" stroke-width="2"/>
+      <text x="48" y="458.0" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="800" letter-spacing="3"
+        fill="#7de3b2" transform="rotate(-90 48 458.0)">ПОДГОТОВКА</text>
+    </g><g>
+      <path d="M82 738 H70 V1088 H82" fill="none" stroke="#4edcff" stroke-opacity=".55" stroke-width="2"/>
+      <text x="48" y="913.0" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="800" letter-spacing="3"
+        fill="#4edcff" transform="rotate(-90 48 913.0)">ВЫБОР UE</text>
+    </g><g>
+      <path d="M82 1128 H70 V1348 H82" fill="none" stroke="#ffb347" stroke-opacity=".55" stroke-width="2"/>
+      <text x="48" y="1238.0" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="800" letter-spacing="3"
+        fill="#ffb347" transform="rotate(-90 48 1238.0)">РЕСУРС</text>
+    </g><g>
+      <path d="M82 1388 H70 V1738 H82" fill="none" stroke="#b88cff" stroke-opacity=".55" stroke-width="2"/>
+      <text x="48" y="1563.0" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15" font-weight="800" letter-spacing="3"
+        fill="#b88cff" transform="rotate(-90 48 1563.0)">ЗАВЕРШЕНИЕ</text>
+    </g>
+  <rect x="160" y="1825" width="125.60000000000001" height="24" rx="7" fill="#101830" stroke="#7de3b2" stroke-opacity=".55"/><text x="222.8" y="1842" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#7de3b2">SCHEDULER.py</text><rect x="303.6" y="1825" width="116.30000000000001" height="24" rx="7" fill="#101830" stroke="#4edcff" stroke-opacity=".55"/><text x="361.75" y="1842" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#4edcff">RES_GRID.py</text><rect x="437.90000000000003" y="1825" width="125.60000000000001" height="24" rx="7" fill="#101830" stroke="#ffb347" stroke-opacity=".55"/><text x="500.70000000000005" y="1842" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ffb347">BS_MODULE.py</text><rect x="581.5" y="1825" width="125.60000000000001" height="24" rx="7" fill="#101830" stroke="#b88cff" stroke-opacity=".55"/><text x="644.3" y="1842" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#b88cff">UE_MODULE.py</text><rect x="725.1" y="1825" width="107.0" height="24" rx="7" fill="#101830" stroke="#9aa7c7" stroke-opacity=".55"/><text x="778.6" y="1842" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#9aa7c7">GLOBALS.py</text><rect x="850.1" y="1825" width="125.60000000000001" height="24" rx="7" fill="#101830" stroke="#ff8cc8" stroke-opacity=".55"/><text x="912.9" y="1842" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ff8cc8">PDCCHManager</text><rect x="993.7" y="1825" width="41.900000000000006" height="24" rx="7" fill="#101830" stroke="#ffe066" stroke-opacity=".55"/><text x="1014.6500000000001" y="1842" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="600" fill="#ffe066">AMC</text>
+</svg>

@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCHEDULER.py — интерактивная модель (v2.1.0)</title>
+<style>
+:root{
+  --bg:#0d1222; --bg2:#101830; --bg3:#141c36; --line:#2a3658;
+  --green:#7de3b2; --cyan:#4edcff; --purple:#b88cff; --orange:#ffb347;
+  --pink:#ff8cc8; --yellow:#ffe066; --grey:#9aa7c7; --dim:#6c7aa0; --txt:#dbe4ff;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{background:var(--bg); color:var(--txt); font:14px/1.45 Inter,'DejaVu Sans',system-ui,sans-serif; padding:14px;}
+h1{font-size:20px; color:var(--cyan); letter-spacing:.5px;}
+h2{font-size:13px; letter-spacing:2px; color:var(--dim); text-transform:uppercase; margin:10px 0 6px;}
+header{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+  border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-bottom:12px; background:var(--bg2);}
+header .sub{color:var(--grey); font-size:12.5px;}
+main{display:grid; grid-template-columns:310px minmax(420px,1fr) 350px; gap:12px; align-items:start;}
+@media (max-width:1250px){ main{grid-template-columns:1fr 1fr;} #rightcol{grid-column:1/-1;} }
+@media (max-width:820px){ main{grid-template-columns:1fr;} }
+.panel{background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:12px;}
+.row{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;}
+label{color:var(--grey); font-size:12.5px;}
+select,input[type=number],input[type=text]{background:var(--bg3); color:var(--txt); border:1px solid var(--line);
+  border-radius:7px; padding:4px 7px; font:13px inherit; width:auto;}
+input[type=number]{width:74px;}
+input[type=checkbox]{accent-color:var(--green);}
+input[type=range]{accent-color:var(--cyan);}
+button{background:var(--bg3); color:var(--txt); border:1px solid var(--line); border-radius:8px;
+  padding:6px 12px; font:13px inherit; cursor:pointer; transition:border-color .15s, transform .05s;}
+button:hover{border-color:var(--cyan);}
+button:active{transform:scale(.97);}
+button.primary{border-color:var(--green); color:var(--green); font-weight:700;}
+button.warn{border-color:var(--orange); color:var(--orange);}
+button.danger{border-color:var(--pink); color:var(--pink);}
+table{border-collapse:collapse; width:100%; font-size:12.5px;}
+th{color:var(--dim); text-align:left; font-weight:600; padding:3px 6px; border-bottom:1px solid var(--line); white-space:nowrap;}
+td{padding:3px 6px; border-bottom:1px solid #1b2440; white-space:nowrap;}
+td input[type=number]{width:58px; padding:2px 5px;}
+.mono{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;}
+.small{font-size:12px; color:var(--grey);}
+.dim{color:var(--dim);}
+.ok{color:var(--green);} .bad{color:var(--pink);} .info{color:var(--cyan);} .wrn{color:var(--orange);}
+#chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+.chip{border:1px solid var(--line); background:var(--bg3); border-radius:20px; padding:5px 11px; cursor:pointer;
+  font-size:12.5px; color:var(--grey); user-select:none; transition:all .15s;}
+.chip:hover{border-color:var(--cyan); color:var(--txt);}
+.chip.active{border-color:var(--green); color:var(--green); box-shadow:0 0 10px rgba(125,227,178,.25);}
+.chip b{font-size:11px; color:var(--dim); margin-right:4px;}
+#stagebox{min-height:210px; background:var(--bg3); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; overflow-x:auto;}
+#gridview{display:flex; flex-wrap:wrap; gap:4px; margin:8px 0;}
+.rbg{width:56px; height:46px; border-radius:7px; background:var(--bg3); border:1px solid var(--line);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:11px; color:var(--dim);
+  cursor:default; transition:all .25s;}
+.rbg b{font-size:12px;}
+.rbg.own{color:#0d1222; font-weight:700; border-color:transparent;}
+#rbstrip{display:flex; flex-wrap:wrap; gap:2px;}
+.rb{width:15px; height:15px; border-radius:3px; background:var(--bg3); border:1px solid #1b2440;}
+.rb.own{border-color:transparent;}
+#log{height:230px; overflow-y:auto; background:#0a0e1c; border:1px solid var(--line); border-radius:8px;
+  padding:8px; font:11.5px/1.5 ui-monospace,Menlo,Consolas,monospace; color:#a8b8d8; white-space:pre-wrap;}
+#log .l-stage{color:var(--green);} #log .l-warn{color:var(--orange);} #log .l-err{color:var(--pink);} #log .l-info{color:var(--cyan);}
+#statsbox{max-height:250px; overflow-y:auto; font:11.5px/1.55 ui-monospace,Menlo,Consolas,monospace; color:var(--grey);
+  background:#0a0e1c; border:1px solid var(--line); border-radius:8px; padding:8px; white-space:pre-wrap;}
+#chartwrap{border:1px solid var(--line); border-radius:12px; background:var(--bg2); padding:12px; margin-top:12px;}
+#chart{width:100%; height:190px; display:block;}
+#legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:6px; font-size:12px; color:var(--grey);}
+.lg-swatch{display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:5px; vertical-align:-1px;}
+#readouts{display:flex; gap:18px; flex-wrap:wrap; margin-top:8px; font-size:13px;}
+#readouts b{color:var(--cyan);}
+.bar{height:10px; border-radius:5px; background:var(--bg3); overflow:hidden; min-width:90px;}
+.bar i{display:block; height:100%; border-radius:5px;}
+footer{margin-top:14px; color:var(--dim); font-size:12px; text-align:center;}
+a{color:var(--cyan);}
+.badge{display:inline-block; border:1px solid var(--line); border-radius:14px; padding:2px 10px; font-size:11.5px; color:var(--grey); margin-left:6px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>SCHEDULER.py — интерактивная модель <span class="badge">v2.1.0 · dev</span></h1>
+  </div>
+  <div class="row">
+    <button id="btn-scenario" class="warn" title="Восстановить сценарий из отчёта week2 §6 и прогнать TTI 5">📌 Сценарий из отчёта</button>
+    <button id="btn-reset" class="danger">↺ Сброс</button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ ЛЕВАЯ КОЛОНКА: ПАРАМЕТРЫ И UE ============ -->
+  <div class="panel" id="leftcol">
+    <h2>Параметры планировщика</h2>
+    <div class="row"><label>Алгоритм</label>
+      <select id="p-algo">
+        <option value="BestCQI">BestCQI (TD жадный)</option>
+        <option value="RoundRobin">RoundRobin (TD цикл)</option>
+        <option value="ProportionalFair">ProportionalFair (TD)</option>
+        <option value="FD_BCQI">FD_BCQI (per-RBG SB CQI)</option>
+        <option value="FD_FGS">FD_FGS (SB CQI + раунды)</option>
+        <option value="FD_PF">FD_PF (per-RBG PF)</option>
+      </select>
+    </div>
+    <div class="row"><label>Полоса, МГц</label>
+      <select id="p-bw"><option>1.4</option><option>3</option><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
+      <span class="small" id="bwinfo"></span>
+    </div>
+    <div class="row"><label>PCFICH</label>
+      <select id="p-pcfich"><option>1</option><option selected>2</option><option>3</option></select>
+      <span class="small" id="cceinfo"></span>
+    </div>
+    <div class="row"><label><input type="checkbox" id="p-window" checked> окно</label>
+      <label>size</label><input type="number" id="p-wsize" value="100" min="1" max="1000">
+      <label>max UE/TTI</label><input type="number" id="p-maxue" value="" placeholder="∞" min="1">
+    </div>
+    <div class="row"><label>CQI update interval</label><input type="number" id="p-upd" value="1" min="1" max="100"></div>
+    <div class="row"><label>Трафик: λ пакетов/TTI</label><input type="number" id="p-lambda" value="0.5" min="0" max="10" step="0.1"></div>
+    <div class="row"><label>Размер пакета, Б</label><input type="number" id="p-pktmin" value="100" min="20" step="20"> …
+      <input type="number" id="p-pktmax" value="1500" min="20" step="20"></div>
+    <div class="row"><label>Дрейф канала каждые</label><input type="number" id="p-chn" value="5" min="1" max="100"><label>TTI</label>
+      <label><input type="checkbox" id="p-fd"> SB-CQI (FD)</label></div>
+
+    <h2>Пользователи (UE)</h2>
+    <table id="uetable">
+      <thead><tr><th>ID</th><th>CQI</th><th>буфер, Б</th><th>+пакет</th><th>avg tput</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="row" style="margin-top:8px">
+      <button id="btn-addue">+ UE</button>
+      <button id="btn-randcqi">🎲 CQI</button>
+      <button id="btn-fillbuf" title="Добавить пакет каждому UE">📦 всем пакет</button>
+    </div>
+  </div>
+
+  <!-- ============ ЦЕНТР: ЭТАПЫ И СЕТКА ============ -->
+  <div class="panel" id="centercol">
+    <h2>Цикл одного TTI <span class="small" id="ttiname"></span></h2>
+    <div class="row">
+      <button id="btn-run" class="primary">▶ 1 TTI</button>
+      <button id="btn-step">⏵ Шаг по этапам</button>
+      <button id="btn-auto">⏩ Auto (50 TTI)</button>
+      <label>скорость</label><input type="range" id="p-speed" min="20" max="800" value="220" style="width:90px">
+    </div>
+    <div id="chips"></div>
+    <div id="stagebox"><span class="dim">Нажми «▶ 1 TTI» или «📌 Сценарий из отчёта». Этапы можно листать кнопкой «⏵ Шаг» или кликом по чипам.</span></div>
+    <h2>Ресурсная сетка · подкадр <span id="gridsub">–</span> <span class="small">(RBG; наведение — детали)</span></h2>
+    <div id="gridview"></div>
+    <div id="rbstrip"></div>
+    <div class="row" style="margin-top:6px"><span class="small dim" id="gridhint"></span></div>
+  </div>
+
+  <!-- ============ ПРАВАЯ КОЛОНКА: ЛОГ, СТАТЫ, СОСТОЯНИЕ ============ -->
+  <div class="panel" id="rightcol">
+    <h2>Verbose-лог</h2>
+    <div id="log"></div>
+    <h2>Δ состояния за TTI</h2>
+    <div id="diffbox" class="small dim">—</div>
+    <h2>get_stats() · amc · pdcch</h2>
+    <div id="statsbox">—</div>
+  </div>
+</main>
+
+<section id="chartwrap">
+  <h2>Мульти-TTI: переданные биты по TTI (последние 150) · Jain's Index · утилизация</h2>
+  <canvas id="chart" width="1200" height="190"></canvas>
+  <div id="legend"></div>
+  <div id="readouts"></div>
+</section>
+
+
+<script>
+'use strict';
+/* ================= ДВИЖОК (реплика SCHEDULER.py) ================= */
+const BITS_PER_BYTE = 8;
+const BANDWIDTH_TO_RB = {1.4:6, 3:15, 5:25, 10:50, 15:75, 20:100};
+const RBG_SIZE_TABLE  = {1.4:1, 3:2, 5:2, 10:3, 15:4, 20:4};
+const CCE_TABLE = {
+  '1.4|1':2,'1.4|2':4,'1.4|3':6,
+  '3|1':2,'3|2':7,'3|3':12,
+  '5|1':3,'5|2':12,'5|3':20,
+  '10|1':8,'10|2':25,'10|3':41,
+  '15|1':12,'15|2':37,'15|3':62,
+  '20|1':17,'20|2':50,'20|3':84};
+const CQI_TO_MCS = {1:[2,0.152],2:[2,0.234],3:[2,0.377],4:[2,0.601],5:[4,0.369],6:[4,0.479],7:[4,0.601],
+  8:[6,0.455],9:[6,0.554],10:[6,0.650],11:[6,0.754],12:[6,0.852],13:[6,0.926],14:[6,0.953],15:[6,0.978]};
+const EWMA_ALPHA = 0.002;
+
+function bitsPerRB(cqi, pcfich, nPorts){
+  nPorts = nPorts || 1;
+  if(!(cqi in CQI_TO_MCS)) throw new Error('Invalid CQI '+cqi);
+  const [mod, rate] = CQI_TO_MCS[cqi];
+  const rs = nPorts*4;
+  const re0 = (7-pcfich)*12 - rs, re1 = 7*12 - rs;
+  return Math.floor((re0+re1)*mod*rate);
+}
+
+class PDCCHManager {
+  constructor(bandwidth, pcfich, maxAllowance){
+    if(!BANDWIDTH_TO_RB[bandwidth]) throw new Error('bad bw');
+    const validP = (bandwidth===1.4) ? [2,3,4] : [1,2,3];
+    if(!validP.includes(pcfich)) throw new Error('Invalid pcfich '+pcfich+' for '+bandwidth);
+    this.bandwidth=bandwidth; this.pcfich=pcfich;
+    const key = bandwidth+'|'+pcfich;
+    if(!(key in CCE_TABLE)) throw new Error('Unsupported combination '+key);
+    this.totalCce = CCE_TABLE[key];
+    this.maxDlCce = (maxAllowance==null) ? this.totalCce : maxAllowance;
+    if(this.maxDlCce > this.totalCce) throw new Error('allowance > total');
+    this.numAssigned = 0; this.allocations = {};
+  }
+  getAggregationLevel(cqi){
+    if(!Number.isInteger(cqi) || cqi<1 || cqi>15) throw new Error('Invalid CQI: '+cqi);
+    if(cqi>=13) return 1; if(cqi>=10) return 2; if(cqi>=7) return 4; return 8;
+  }
+  allocateCce(ueId, n){
+    if(ueId in this.allocations) return false;
+    if(n > this.maxDlCce - this.numAssigned) return false;
+    this.numAssigned += n; this.allocations[ueId] = n; return true;
+  }
+  resetTti(){ this.numAssigned=0; this.allocations={}; }
+  getStats(){
+    const util = this.maxDlCce>0 ? this.numAssigned/this.maxDlCce : 0;
+    return {pdcch_cce_total_count:this.totalCce, pdcch_cce_allocated_count:this.numAssigned,
+      pdcch_cce_utilization_pct:Math.round(util*10000)/100,
+      pdcch_ue_cce_allocations:Object.assign({}, this.allocations)};
+  }
+}
+
+class Grid {
+  constructor(bandwidth){
+    this.bandwidth=bandwidth;
+    this.rbPerSlot=BANDWIDTH_TO_RB[bandwidth];
+    this.rbgSize=RBG_SIZE_TABLE[bandwidth];
+    this.totalRbg=Math.ceil(this.rbPerSlot/this.rbgSize);
+    this.occ={}; // "sub:freq" -> ueId
+    this.statsAllocated=0;
+  }
+  rbgIndices(rbg){
+    const s=rbg*this.rbgSize, e=Math.min(s+this.rbgSize,this.rbPerSlot);
+    const out=[]; for(let i=s;i<e;i++) out.push(i); return out;
+  }
+  allocateRBG(tti, rbg, ueId){
+    const sub=tti%10, idx=this.rbgIndices(rbg), tmp=[];
+    for(const f of idx){ const k=sub+':'+f; if(this.occ[k]!==undefined){ tmp.forEach(x=>delete this.occ[x]); return false; } }
+    for(const f of idx){ this.occ[sub+':'+f]=ueId; tmp.push(sub+':'+f); this.statsAllocated++; }
+    return true;
+  }
+  generateBitmap(tti, ueId){
+    const sub=tti%10, bm=[];
+    for(let r=0;r<this.totalRbg;r++){
+      let hit=false;
+      for(const f of this.rbgIndices(r)) if(this.occ[sub+':'+f]===ueId){hit=true;break;}
+      bm.push(hit?1:0);
+    }
+    return bm;
+  }
+  resetSubframe(tti){ const sub=tti%10; for(const k of Object.keys(this.occ)) if(k.startsWith(sub+':')) delete this.occ[k]; }
+}
+
+class UEState {
+  constructor(id, cqi){
+    this.UE_ID=id; this.cqi=cqi; this.sbCqi=[];
+    this.currentTput=0; this.avgTput=0; this.lastBits=0; this.totalBits=0;
+    this.packets=[]; // размеры байт, FIFO
+  }
+  bufferSize(){ return this.packets.reduce((a,b)=>a+b,0); }
+  addPacket(sz){ this.packets.push(sz); }
+  // RLC-семантика: целые пакеты + сегментация головного (BS_MODULE.get_packets)
+  getPackets(numBytes){
+    let extracted=0;
+    while(this.packets.length && extracted<numBytes){
+      const head=this.packets[0];
+      if(extracted+head>numBytes){ const seg=numBytes-extracted; this.packets[0]=head-seg; extracted+=seg; break; }
+      this.packets.shift(); extracted+=head;
+    }
+    return extracted;
+  }
+  UPD(bits, ms){
+    this.currentTput = ms>0 ? (bits*1000)/ms : 0;
+    this.avgTput = (1-EWMA_ALPHA)*this.avgTput + EWMA_ALPHA*this.currentTput;
+    this.lastBits = bits; this.totalBits += bits;
+  }
+}
+
+class Scheduler {
+  constructor(algo, grid, opts){
+    this.algo=algo; this.grid=grid;
+    this.pcfich=opts.pcfich; this.maxDlUeTti=opts.maxDlUeTti||null;
+    this.windowSize=opts.windowSize||100; this.enableWindow=opts.enableWindow!==false;
+    this.wbUpd=opts.wbUpd||1;
+    this.pdcch=new PDCCHManager(grid.bandwidth, this.pcfich, null);
+    this.cqiMap={}; this.ueQueue=null;
+    this.rrRbgOffset=0; this.rrUeOffset=0;
+    this.last={}; this.lastUeTx={};
+    this.lastPdcchBlocked=0; this.lastAvgPriority=0; // аналог _last_pdcch_blocked_count / _last_avg_priority_value (переживают пустые TTI)
+  }
+  getWb(id){ return (id in this.cqiMap) ? this.cqiMap[id].wb : 0; }
+  getSb(id){ return (id in this.cqiMap) ? this.cqiMap[id].sb : []; }
+  bits(cqi){ return bitsPerRB(cqi, this.pcfich, 1); }
+
+  schedule(tti, users){
+    const T=[]; const L=[];
+    const before={}; users.forEach(u=>{const e=u.ue; before[u.UE_ID]={buf:e.bufferSize(),cur:e.currentTput,avg:e.avgTput,last:e.lastBits,total:e.totalBits};});
+    const tStart=(typeof performance!=='undefined'?performance.now():Date.now());
+    this.last.tti=tti;
+
+    // ---- ЭТАП 0 ----
+    let created=0, updated=0, staleKept=0;
+    if(tti % this.wbUpd === 0){
+      for(const u of users){
+        const id=u.UE_ID, cqi=u.cqi;
+        if(cqi>=1 && cqi<=15){
+          if(!(id in this.cqiMap)){ this.cqiMap[id]={wb:cqi,lastWb:tti,sb:[],lastSb:0}; created++; }
+          else { this.cqiMap[id].wb=cqi; this.cqiMap[id].lastWb=tti; updated++; }
+        } else if(id in this.cqiMap) staleKept++;
+        const sbl=u.sbb_cqi;
+        if(Array.isArray(sbl)&&sbl.length>0&&(id in this.cqiMap)){ this.cqiMap[id].sb=sbl.slice(); this.cqiMap[id].lastSb=tti; }
+      }
+      L.push('[CQI_MAP TTI '+tti+'] entries: '+Object.keys(this.cqiMap).length+' UE (new '+created+', upd '+updated+(staleKept?', stale kept '+staleKept:'')+')');
+    }
+    T.push({stage:'0',name:'_refresh_cqi',title:'CQI map',html:this.htmlCqi(staleKept),});
+
+    // ---- ЭТАП 1 ----
+    users.forEach(u=>{u.ue.currentTput=0;});
+    const eligible=[];
+    const eligRows=[];
+    for(const u of users){
+      const id=u.UE_ID, e=u.ue;
+      const bsize=e.bufferSize();
+      u.bs_buffer_size=bsize;
+      const wb=this.getWb(id);
+      const okB=bsize>0, okC=(wb>=1&&wb<=15);
+      eligRows.push({id,bsize,wb,okB,okC});
+      if(okB&&okC) eligible.push(u);
+    }
+    L.push('[SCHEDULER TTI '+tti+'] Eligibility: '+users.length+' total -> '+eligible.length+' eligible');
+    T.push({stage:'1',name:'_filter_eligible_ues',title:'Eligibility',rows:eligRows,
+      html:this.htmlElig(eligRows)});
+    if(!eligible.length){ return this.emptyResult(tti,T,L,before,users); }
+
+    // ---- ЭТАП 2 / 2.5 ----
+    let windowed=eligible, rotated=0, qinfo='выключено';
+    if(this.enableWindow){
+      const ids=eligible.map(u=>u.UE_ID);
+      if(!this.ueQueue||!this.ueQueue.length){ this.ueQueue=ids.slice(); L.push('SCHEDULER [Window] Initialized queue with '+ids.length+' UE'); qinfo='инициализирована ['+this.ueQueue.join(', ')+']'; }
+      else{
+        const cur=new Set(ids), ex=new Set(this.ueQueue);
+        ids.filter(i=>!ex.has(i)).sort((a,b)=>a-b).forEach(i=>this.ueQueue.push(i));
+        this.ueQueue=this.ueQueue.filter(i=>cur.has(i));
+        qinfo='['+this.ueQueue.join(', ')+']';
+      }
+      const wids=this.ueQueue.slice(0,this.windowSize);
+      const byId={}; eligible.forEach(u=>byId[u.UE_ID]=u);
+      windowed=wids.filter(i=>i in byId).map(i=>byId[i]);
+      const proc=Math.min(this.windowSize,this.ueQueue.length);
+      this.ueQueue=this.ueQueue.slice(proc).concat(this.ueQueue.slice(0,proc));
+      rotated=proc;
+      L.push('SCHEDULER [Window] TTI window: '+windowed.length+'/'+eligible.length+' UE selected, rotated '+proc);
+    }
+    T.push({stage:'2·2.5',name:'window',title:'Скользящее окно',
+      html:'<div class="small">очередь: <span class="mono">'+qinfo+'</span>'+(rotated?', ротировано '+rotated:'')+' → прошло '+windowed.length+' UE</div>'});
+    if(!windowed.length){ return this.emptyResult(tti,T,L,before,users); }
+
+    // ---- ЭТАП 3 ----
+    const prio=this.calcPriorities(windowed,tti);
+    this.lastPrioritized=prio; // аналог self._last_prioritized_users (не сбрасывается в _empty_result — как в Python)
+    L.push('[SCHEDULER.'+this.algo+' TTI '+tti+'] Priority: '+prio.map(u=>u.UE_ID+'='+ (Math.round(u.priority*100)/100)).join(', '));
+    T.push({stage:'3',name:'_calculate_priorities',title:'Приоритеты ('+this.algo+')',
+      html:this.htmlPrio(prio)});
+
+    // ---- ЭТАП 4 ----
+    const sorted=prio.slice().sort((a,b)=>b.priority-a.priority);
+    let plist=this.maxDlUeTti? sorted.slice(0,this.maxDlUeTti): sorted;
+    if(plist.length) this.lastAvgPriority=plist.reduce((a,u)=>a+(u.priority||0),0)/plist.length;
+    L.push('[SCHEDULER TTI '+tti+'] PriorityList: '+plist.length+' UE'+(plist.length?(' | top: '+plist.slice(0,3).map(u=>u.UE_ID).join(',')):''));
+    T.push({stage:'4',name:'_form_priority_list',title:'Priority list',
+      html:'<div class="small mono">'+(plist.length?plist.map(u=>'UE'+u.UE_ID+' ('+(Math.round(u.priority*100)/100)+')').join(' → '):'пусто')+'</div>'});
+    if(!plist.length){ return this.emptyResult(tti,T,L,before,users); }
+
+    // ---- ЭТАП 4.5 ----
+    const est=this.applyEstimation(plist,tti,L);
+    T.push({stage:'4.5',name:'_apply_pdsch_estimation',title:'Оценка PDSCH',html:est.html});
+
+    // ---- ЭТАП 5 ----
+    this.pdcch.resetTti();
+    const withPdcch=[]; const pdcchRows=[];
+    for(const u of est.list){
+      const cqi=this.getWb(u.UE_ID);
+      let req=0, ok=false;
+      try{ req=this.pdcch.getAggregationLevel(cqi); ok=this.pdcch.allocateCce(u.UE_ID,req); }catch(err){ req=-1; }
+      if(ok){ u.allocated_cce=req; withPdcch.push(u); }
+      pdcchRows.push({id:u.UE_ID,cqi,req,ok});
+    }
+    const blocked=est.list.length-withPdcch.length;
+    this.lastPdcchBlocked=blocked;
+    L.push('[SCHEDULER] PDCCH: '+est.list.length+' requested -> '+withPdcch.length+' allocated'+(blocked?', blocked '+blocked:'')+' | CCE '+this.pdcch.numAssigned+'/'+this.pdcch.maxDlCce);
+    T.push({stage:'5',name:'_allocate_pdcch',title:'PDCCH / CCE',rows:pdcchRows,
+      html:this.htmlPdcch(pdcchRows)});
+    if(!withPdcch.length){ return this.emptyResult(tti,T,L,before,users); }
+
+    // ---- ЭТАП 6 ----
+    const alloc=this.allocatePdsch(tti,withPdcch,eligible,L);
+    const events=this._lastEvents||[];
+    const rbTotal=Object.values(alloc).reduce((a,v)=>a+v.length,0);
+    L.push('[PDSCH] '+this.algo+': занято '+rbTotal+' из '+this.grid.rbPerSlot+' RB ('+this._lastEvents.length+' из '+this.grid.totalRbg+' RBG)');
+    T.push({stage:'6',name:'_allocate_pdsch',title:'PDSCH / RBG ('+this.algo+')',events,alloc,
+      html:this.htmlAlloc(alloc,events)});
+
+    // ---- ЭТАП 7 ----
+    const buf=this.processBuffers(tti,users,alloc,L);
+    T.push({stage:'7',name:'_process_buffers',title:'Буферы и throughput',rows:buf,
+      html:this.htmlBuf(buf)});
+
+    // ---- ЭТАП 7.5 ----
+    const activeUes=Object.values(alloc).filter(v=>v.length>0).length;
+    this.last={tti, eligibleCount:eligible.length, allocatedRbs:rbTotal, activeUes,
+      allocation:alloc, users, priorityListFull:plist};
+    const tEnd=(typeof performance!=='undefined'?performance.now():Date.now());
+    this.last.schTimeUs=Math.round((tEnd-tStart)*1000)/1000;
+
+    // ---- ЭТАП 8 ----
+    const bitmap={}; eligible.forEach(u=>bitmap[u.UE_ID]=this.grid.generateBitmap(tti,u.UE_ID));
+    const result={allocation:alloc, statistics:{}, bitmap, pdcch_stats:this.pdcch.getStats()};
+    L.push('[SCHEDULER TTI '+tti+'] Result: '+activeUes+' UE scheduled, '+rbTotal+' RB allocated');
+    const fmtRanges=a=>{ if(!a.length) return '—';
+      const parts=[]; let st=a[0], pv=a[0];
+      for(const x of a.slice(1)){ if(x===pv+1){ pv=x; continue; } parts.push(st===pv?String(st):st+'..'+pv); st=pv=x; }
+      parts.push(st===pv?String(st):st+'..'+pv); return 'RB '+parts.join(', '); };
+    let h8='<table><tr><th>поле</th><th>значение</th></tr>';
+    h8+='<tr><td class="mono">allocation</td><td class="mono small">'+(Object.keys(alloc).length? Object.keys(alloc).map(k=>'UE'+k+': '+fmtRanges(alloc[k])+' ('+alloc[k].length+' RB)').join('<br>') : 'пусто')+'</td></tr>';
+    h8+='<tr><td class="mono">bitmap</td><td class="mono small">'+(Object.keys(bitmap).length? Object.keys(bitmap).map(k=>'UE'+k+': '+bitmap[k].join('')).join('<br>') : '—')+'</td></tr>';
+    h8+='<tr><td class="mono">pdcch_stats</td><td class="mono small">'+result.pdcch_stats.pdcch_cce_allocated_count+'/'+result.pdcch_stats.pdcch_cce_total_count+' CCE ('+result.pdcch_stats.pdcch_cce_utilization_pct+'%) · '+JSON.stringify(result.pdcch_stats.pdcch_ue_cce_allocations)+'</td></tr>';
+    h8+='<tr><td class="mono">statistics</td><td class="small dim">{} — пусто by design: настоящая статистика уходит через get_stats() (панель справа)</td></tr></table>';
+    h8+='<details style="margin-top:8px"><summary class="small dim">полный JSON (как возвращает Python)</summary><div class="mono small" style="white-space:pre-wrap;max-height:220px;overflow:auto">'+JSON.stringify({allocation:alloc,statistics:{},bitmap,pdcch_stats:result.pdcch_stats},null,1)+'</div></details>';
+    T.push({stage:'8',name:'_build_result',title:'Результат',result,html:h8});
+
+    const after={}; users.forEach(u=>{const e=u.ue; after[u.UE_ID]={buf:e.bufferSize(),cur:e.currentTput,avg:e.avgTput,last:e.lastBits,total:e.totalBits};});
+    return {result, trace:T, log:L, before, after, tti,
+      stats:this.getStats(), amc:this.getAmcStats(), pdcchStats:this.pdcch.getStats()};
+  }
+
+  emptyResult(tti,T,L,before,users){
+    L.push('[SCHEDULER] Empty result: No UE to schedule');
+    // Python-нюанс: _empty_result НЕ сбрасывает _last_pdcch_blocked_count / _last_avg_priority_value /
+    // _last_prioritized_users / last_ue_transmitted_bits — эти поля переживают пустой TTI (инстанс-поля выше)
+    this.last={tti, eligibleCount:0, allocatedRbs:0, activeUes:0, allocation:{}, users:[], priorityListFull:[]};
+    T.push({stage:'∅',name:'_empty_result',title:'Пустой результат',html:'<div class="wrn small">Досрочный выход: _empty_result() — статистика обнулена</div>'});
+    const after={}; users.forEach(u=>{const e=u.ue; after[u.UE_ID]={buf:e.bufferSize(),cur:e.currentTput,avg:e.avgTput,last:e.lastBits,total:e.totalBits};});
+    return {result:{allocation:{},statistics:{},bitmap:{},pdcch_stats:this.pdcch.getStats()},
+      trace:T,log:L,before,after,tti,stats:this.getStats(),amc:this.getAmcStats(),pdcchStats:this.pdcch.getStats()};
+  }
+
+  calcPriorities(windowed,tti){
+    const A=this.algo;
+    if(A==='BestCQI'||A==='FD_BCQI'){
+      windowed.forEach(u=>u.priority=this.getWb(u.UE_ID));
+    } else if(A==='RoundRobin'||A==='FD_FGS'){
+      const n=windowed.length; if(!n) return windowed;
+      const plan=(this.maxDlUeTti&&this.maxDlUeTti<n)?this.maxDlUeTti:n;
+      const st=this.rrUeOffset%n;
+      const rot=windowed.slice(st).concat(windowed.slice(0,st));
+      rot.forEach((u,i)=>u.priority=plan-i);
+      return rot;
+    } else if(A==='ProportionalFair'||A==='FD_PF'){
+      for(const u of windowed){
+        const b=this.bits(this.getWb(u.UE_ID));
+        const inst=this.grid.rbPerSlot*b;
+        const avg=u.ue.avgTput;
+        u.instant_rate=inst;
+        u.priority = (avg<=0) ? inst/1.0 : inst/(avg/1000);
+      }
+    }
+    return windowed;
+  }
+
+  applyEstimation(plist,tti,L){
+    const A=this.algo;
+    if(A==='RoundRobin'||A==='FD_BCQI'||A==='FD_FGS'||A==='FD_PF'){
+      L.push('[SCHEDULER TTI '+tti+'] PDSCH estimation: SKIPPED ('+A+')');
+      return {list:plist, html:'<div class="small">pass-through: у '+A+' распределение равномерное/per-RBG — оценка не применяется</div>'};
+    }
+    const totalRb=this.grid.rbPerSlot, thr=totalRb*0.95;
+    const sel=[]; let est=0; const rows=[];
+    for(let i=0;i<plist.length;i++){
+      const u=plist[i], cqi=this.getWb(u.UE_ID), b=this.bits(cqi);
+      const need=Math.min(Math.floor(u.bs_buffer_size*8/b), totalRb);
+      if(i===0){ sel.push(u); est+=need; rows.push({id:u.UE_ID,cqi,need,sum:est,ok:true}); continue; }
+      if(est+need>=thr){ rows.push({id:u.UE_ID,cqi,need,sum:est+need,ok:false});
+        L.push('[SCHEDULER TTI '+tti+'] PDSCH estimation threshold reached ('+est+'/'+totalRb+' RB = '+(Math.round(est/totalRb*1000)/10)+'%), '+(plist.length-sel.length)+' UE excluded');
+        break; }
+      sel.push(u); est+=need; rows.push({id:u.UE_ID,cqi,need,sum:est,ok:true});
+    }
+    let h='<table><tr><th>UE</th><th>CQI</th><th>нужно RB</th><th>Σ</th><th>порог '+thr.toFixed(1)+'</th></tr>';
+    rows.forEach(r=>h+='<tr><td>UE'+r.id+'</td><td>'+r.cqi+'</td><td>'+r.need+'</td><td>'+r.sum+'</td><td class="'+(r.ok?'ok">прошёл':'bad">отсечён')+'</td></tr>');
+    return {list:sel, html:h+'</table>'};
+  }
+
+  allocatePdsch(tti,withPdcch,eligible,L){
+    const A=this.algo; this._lastEvents=[];
+    const alloc={};
+    if(A==='RoundRobin') return this.pdschRR(tti,withPdcch,eligible,alloc,L);
+    if(A==='FD_BCQI') return this.pdschFdBcqi(tti,withPdcch,eligible,alloc,L);
+    if(A==='FD_FGS') return this.pdschFdFgs(tti,withPdcch,eligible,alloc,L);
+    if(A==='FD_PF') return this.pdschFdPf(tti,withPdcch,eligible,alloc,L);
+    return this.pdschTdGreedy(tti,withPdcch,eligible,alloc,L); // BestCQI / PF
+  }
+
+  pdschTdGreedy(tti,withPdcch,eligible,alloc,L){
+    eligible.forEach(u=>alloc[u.UE_ID]=[]);
+    if(!withPdcch.length) return alloc;
+    const rem={}; withPdcch.forEach(u=>rem[u.UE_ID]=u.bs_buffer_size*8);
+    for(let rbg=0;rbg<this.grid.totalRbg;rbg++){
+      if(Object.values(rem).every(v=>v<=0)) break;
+      let best=null;
+      for(const u of withPdcch){ if(rem[u.UE_ID]>0){ best=u; break; } }
+      if(!best) break;
+      const id=best.UE_ID;
+      if(this.grid.allocateRBG(tti,rbg,id)){
+        const idx=this.grid.rbgIndices(rbg);
+        alloc[id]=alloc[id].concat(idx);
+        const cap=idx.length*this.bits(this.getWb(id));
+        rem[id]-=Math.min(rem[id],cap);
+        this._lastEvents.push({rbg,ue:id,idx});
+      }
+    }
+    return alloc;
+  }
+
+  pdschRR(tti,withPdcch,eligible,alloc,L){
+    withPdcch.forEach(u=>alloc[u.UE_ID]=[]);
+    const num=withPdcch.length; if(!num) return alloc;
+    const eligIds=eligible.map(u=>u.UE_ID);
+    let ueIndex=this.rrRbgOffset, lastServed=-1;
+    for(let rbg=0;rbg<this.grid.totalRbg;rbg++){
+      const u=withPdcch[ueIndex%num], id=u.UE_ID;
+      if(u.bs_buffer_size>0){
+        if(this.grid.allocateRBG(tti,rbg,id)){
+          const idx=this.grid.rbgIndices(rbg);
+          alloc[id]=alloc[id].concat(idx);
+          const ci=eligIds.indexOf(id); if(ci>lastServed) lastServed=ci;
+          const tb=Math.floor(idx.length*this.bits(this.getWb(id))/8);
+          u.bs_buffer_size=Math.max(0,u.bs_buffer_size-tb);
+          this._lastEvents.push({rbg,ue:id,idx});
+        }
+      }
+      ueIndex++;
+    }
+    this.rrRbgOffset=ueIndex%num;
+    if(lastServed>=0&&eligible.length) this.rrUeOffset=(lastServed+1)%eligible.length;
+    return alloc;
+  }
+
+  fdCqiOf(id,rbg){
+    const sb=this.getSb(id);
+    if(sb.length&&rbg<sb.length) return sb[rbg]>0?sb[rbg]:this.getWb(id);
+    return this.getWb(id);
+  }
+
+  pdschFdBcqi(tti,withPdcch,eligible,alloc){
+    eligible.forEach(u=>alloc[u.UE_ID]=[]);
+    const rem={}; withPdcch.forEach(u=>rem[u.UE_ID]=(u.bs_buffer_size||0)*8);
+    for(let rbg=0;rbg<this.grid.totalRbg;rbg++){
+      if(Object.values(rem).every(v=>v<=0)) break;
+      const idx=this.grid.rbgIndices(rbg); let best=null,bestCqi=-1;
+      for(const u of withPdcch){
+        const id=u.UE_ID; if(rem[id]<=0) continue;
+        const cqi=this.fdCqiOf(id,rbg); if(cqi<=0) continue;
+        if(cqi>bestCqi){ bestCqi=cqi; best=u; }
+      }
+      if(!best) continue;
+      const id=best.UE_ID;
+      if(!this.grid.allocateRBG(tti,rbg,id)) continue;
+      alloc[id]=alloc[id].concat(idx);
+      rem[id]=Math.max(0,rem[id]-idx.length*this.bits(bestCqi));
+      this._lastEvents.push({rbg,ue:id,idx,cqi:bestCqi});
+    }
+    return alloc;
+  }
+
+  pdschFdFgs(tti,withPdcch,eligible,alloc){
+    eligible.forEach(u=>alloc[u.UE_ID]=[]);
+    const num=withPdcch.length; if(!num) return alloc;
+    const eMap={}; eligible.forEach((u,i)=>eMap[u.UE_ID]=i);
+    let ueIndex=this.rrRbgOffset, lastServed=-1;
+    const rem={}; withPdcch.forEach(u=>rem[u.UE_ID]=(u.bs_buffer_size||0)*8);
+    let served=new Set();
+    for(let rbg=0;rbg<this.grid.totalRbg;rbg++){
+      if(Object.values(rem).every(v=>v<=0)) break;
+      const idx=this.grid.rbgIndices(rbg);
+      let best=null,bestCqi=-1;
+      for(let pass=0;pass<2;pass++){
+        best=null;bestCqi=-1;
+        for(let k=0;k<num;k++){
+          const u=withPdcch[(ueIndex+k)%num], id=u.UE_ID;
+          if(rem[id]<=0||served.has(id)) continue;
+          const cqi=this.fdCqiOf(id,rbg); if(cqi<=0) continue;
+          if(cqi>bestCqi){ bestCqi=cqi; best=u; }
+        }
+        if(best) break;
+        if(served.size) served.clear(); else break;
+      }
+      if(!best) continue;
+      const id=best.UE_ID;
+      if(this.grid.allocateRBG(tti,rbg,id)){
+        alloc[id]=alloc[id].concat(idx);
+        rem[id]=Math.max(0,rem[id]-idx.length*this.bits(bestCqi));
+        served.add(id); ueIndex++;
+        lastServed=(id in eMap)?eMap[id]:-1;
+        this._lastEvents.push({rbg,ue:id,idx,cqi:bestCqi});
+      }
+    }
+    this.rrRbgOffset=ueIndex%num;
+    if(lastServed>=0&&eligible.length) this.rrUeOffset=(lastServed+1)%eligible.length;
+    return alloc;
+  }
+
+  pdschFdPf(tti,withPdcch,eligible,alloc){
+    eligible.forEach(u=>alloc[u.UE_ID]=[]);
+    if(!withPdcch.length) return alloc;
+    const rem={}; withPdcch.forEach(u=>rem[u.UE_ID]=(u.bs_buffer_size||0)*8);
+    for(let rbg=0;rbg<this.grid.totalRbg;rbg++){
+      if(Object.values(rem).every(v=>v<=0)) break;
+      const idx=this.grid.rbgIndices(rbg);
+      let best=null,bestMetric=-1,bestBits=0,bestCqi=0;
+      for(const u of withPdcch){
+        const id=u.UE_ID; if(rem[id]<=0) continue;
+        const sb=this.getSb(id);
+        let cqi=(sb.length&&rbg<sb.length&&sb[rbg]>0)?sb[rbg]:this.getWb(id);
+        if(cqi<=0) continue;
+        const rjk=idx.length*this.bits(cqi);
+        const avg=u.ue.avgTput;
+        const denom=(avg<=0)?1.0:(avg/1000.0);
+        const m=rjk/denom;
+        if(m>bestMetric){ bestMetric=m; best=u; bestBits=rjk; bestCqi=cqi; }
+      }
+      if(!best) continue;
+      const id=best.UE_ID;
+      if(!this.grid.allocateRBG(tti,rbg,id)) continue;
+      alloc[id]=alloc[id].concat(idx);
+      rem[id]=Math.max(0,rem[id]-bestBits);
+      this._lastEvents.push({rbg,ue:id,idx,cqi:bestCqi});
+    }
+    return alloc;
+  }
+
+  processBuffers(tti,users,alloc,L){
+    const rows=[];
+    this.lastUeTx={}; // как в Python: self.last_ue_transmitted_bits = {} в начале _process_buffers
+    for(const u of users){
+      const e=u.ue, id=u.UE_ID;
+      const rbs=(alloc[id]||[]).length;
+      let updCalls=0;
+      if(rbs===0){ e.UPD(0,1); this.lastUeTx[id]=0; updCalls++; }
+      const cqi=this.getWb(id);
+      const maxBits=rbs*(cqi>=1&&cqi<=15?this.bits(cqi):0);
+      const maxBytes=Math.floor(maxBits/BITS_PER_BYTE);
+      const remBits=maxBits%BITS_PER_BYTE;
+      if(maxBytes<=0){ e.UPD(0,1); this.lastUeTx[id]=0; updCalls++;
+        rows.push({id,rbs,cqi,maxBits,maxBytes:0,extracted:0,tx:0,updCalls,cur:e.currentTput,avg:e.avgTput}); continue; }
+      const extracted=e.getPackets(maxBytes);
+      const tx=extracted*BITS_PER_BYTE+remBits;
+      this.lastUeTx[id]=tx; e.UPD(tx,1); updCalls++;
+      rows.push({id,rbs,cqi,maxBits,maxBytes,extracted,tx,updCalls,cur:e.currentTput,avg:e.avgTput});
+      L.push('[BUFFER] TTI '+tti+' UE '+id+': RB='+rbs+', CQI='+cqi+', bits/RB='+(cqi>=1?this.bits(cqi):0)+', MaxBytes='+maxBytes+', Transmitted='+extracted+'B ('+tx+'bits)'+(updCalls>1?' [двойной UPD(0) — известный нюанс]':''));
+    }
+    return rows;
+  }
+
+  getStats(){
+    const l=this.last; if(!l||!l.allocation) return {};
+    const rbAvg=l.activeUes?l.allocatedRbs/l.activeUes:0;
+    const util=this.grid.rbPerSlot>0?l.allocatedRbs/this.grid.rbPerSlot*100:0;
+    let bufSum=0; const ueBuf={};
+    (this.lastPrioritized||[]).forEach(u=>{ bufSum+=(u.bs_buffer_size||0); ueBuf[u.UE_ID]=u.bs_buffer_size||0; });
+    const uePrio={}; (this.last.priorityList||l.priorityListFull||[]).forEach(u=>{ if(u.priority!==undefined) uePrio[u.UE_ID]=Math.round(u.priority*10000)/10000; });
+    return {tti:l.tti, sch_eligible_ue_count:l.eligibleCount, sch_active_ue_count:l.activeUes,
+      dl_rb_allocated_count:l.allocatedRbs, dl_rb_per_ue_avg:Math.round(rbAvg*100)/100,
+      buffer_size_sum_bytes:bufSum, dl_prb_utilization_pct:Math.round(util*100)/100,
+      sch_total_time_us:l.schTimeUs||0, sch_pdcch_blocked_count:this.lastPdcchBlocked,
+      sch_avg_priority_value:Math.round((this.lastAvgPriority||0)*10000)/10000,
+      ue_buffer_sizes:ueBuf, ue_transmitted_bits:Object.assign({},this.lastUeTx)};
+  }
+  getAmcStats(){
+    const l=this.last; if(!l||!l.users) return {};
+    let cap=0,txSum=0,tputSum=0,rbSum=0; const cqiVals=[];
+    for(const u of l.users){
+      const e=u.ue,id=u.UE_ID,cqi=this.getWb(id);
+      const rbs=(l.allocation[id]||[]).length;
+      if(rbs>0&&cqi>=1&&cqi<=15) cap+=rbs*this.bits(cqi);
+      txSum+=e.lastBits; tputSum+=e.currentTput; rbSum+=rbs; cqiVals.push(cqi);
+    }
+    return {dl_capacity_bits_sum_tti:cap, dl_transmitted_bits_sum_tti:txSum,
+      dl_throughput_sum_kbps:Math.round(tputSum/1000*100)/100,
+      dl_bits_per_rb_avg:rbSum?Math.round(txSum/rbSum*100)/100:0,
+      dl_cqi_wb_avg_idx:cqiVals.length?Math.round(cqiVals.reduce((a,b)=>a+b,0)/cqiVals.length*100)/100:0};
+  }
+
+  /* --- HTML-кусочки для трейса --- */
+  htmlCqi(stale){
+    let h='<table><tr><th>UE</th><th>wb_cqi</th><th>sb_cqi</th><th>last_wb</th></tr>';
+    for(const id of Object.keys(this.cqiMap)){ const e=this.cqiMap[id];
+      h+='<tr><td>UE'+id+'</td><td class="info">'+e.wb+'</td><td class="mono small">'+(e.sb.length?e.sb.join(','): '[]')+'</td><td>'+e.lastWb+'</td></tr>'; }
+    return h+'</table>'+(stale?'<div class="wrn small">⚠ '+stale+' UE с невалидным CQI — сохранено старое значение (нюанс _refresh_cqi)</div>':'');
+  }
+  htmlElig(rows){
+    let h='<table><tr><th>UE</th><th>буфер, Б</th><th>wb CQI</th><th>буфер&gt;0</th><th>CQI∈[1..15]</th><th>итог</th></tr>';
+    rows.forEach(r=>h+='<tr><td>UE'+r.id+'</td><td>'+r.bsize+'</td><td>'+r.wb+'</td><td class="'+(r.okB?'ok">✓':'bad">✗')+'</td><td class="'+(r.okC?'ok">✓':'bad">✗')+'</td><td class="'+((r.okB&&r.okC)?'ok">eligible':'bad">отсеян')+'</td></tr>');
+    return h+'</table><div class="small dim">побочный эффект: current_dl_throughput=0 у всех users</div>';
+  }
+  htmlPrio(prio){
+    const mx=Math.max(1,...prio.map(u=>u.priority));
+    let h='<table><tr><th>UE</th><th>priority</th><th></th></tr>';
+    prio.forEach(u=>{ const w=Math.max(2,Math.round(u.priority/mx*180));
+      h+='<tr><td>UE'+u.UE_ID+'</td><td class="mono">'+(Math.round(u.priority*1000)/1000)+'</td><td><div class="bar" style="width:190px"><i style="width:'+w+'px;background:var(--cyan)"></i></div></td></tr>'; });
+    return h+'</table>';
+  }
+  htmlPdcch(rows){
+    let h='<table><tr><th>UE</th><th>CQI</th><th>agg level</th><th>итог</th></tr>';
+    rows.forEach(r=>h+='<tr><td>UE'+r.id+'</td><td>'+r.cqi+'</td><td>'+(r.req>0?r.req+' CCE':'—')+'</td><td class="'+(r.ok?'ok">выделен':'bad">заблокирован')+'</td></tr>');
+    h+='</table><div class="small">бюджет: <b class="info">'+this.pdcch.numAssigned+'/'+this.pdcch.maxDlCce+' CCE</b> ('+Math.round(this.pdcch.numAssigned/this.pdcch.maxDlCce*100)+'%) · порядок обхода = priority list</div>';
+    return h;
+  }
+  htmlAlloc(alloc,events){
+    let h='<div class="small" style="margin-bottom:6px">Порядок выдачи RBG: '+ (events.length? events.map(e=>'RBG'+e.rbg+'→UE'+e.ue+(e.cqi?' (cqi '+e.cqi+')':'')).join(', ') : 'нет выдач') +'</div>';
+    h+='<table><tr><th>UE</th><th>RB</th><th>кол-во</th></tr>';
+    for(const id of Object.keys(alloc)){ const v=alloc[id];
+      h+='<tr><td>UE'+id+'</td><td class="mono small">'+(v.length?(v[0]+'..'+(v[v.length-1])):'—')+'</td><td>'+(v.length||'')+'</td></tr>'; }
+    return h+'</table>';
+  }
+  htmlBuf(rows){
+    let h='<table><tr><th>UE</th><th>RB</th><th>вместимость, Б</th><th>извлечено, Б</th><th>бит (с остатком)</th><th>current, Мбит/с</th><th>EWMA</th></tr>';
+    rows.forEach(r=>{
+      h+='<tr><td>UE'+r.id+'</td><td>'+r.rbs+'</td><td>'+r.maxBytes+'</td><td class="'+(r.extracted?'ok':'dim')+'">'+r.extracted+'</td><td>'+r.tx+'</td><td>'+(Math.round((r.cur||0)/1000)/1000)+'</td><td>'+Math.round((r.avg||0)*100)/100+'</td></tr>'; });
+    return h+'</table><div class="small dim">transmitted = 8·извлечено + (max_bits mod 8); UPD_DL_THROUGHPUT_BPS(bits, 1 мс) → EWMA α=0.002</div>';
+  }
+}
+
+/* ================= МИР / СИМУЛЯЦИЯ ================= */
+let WORLD=null, TTI=0, lastRun=null, stepIdx=-1, autoTimer=null;
+const UE_COLORS=['#4edcff','#7de3b2','#b88cff','#ffb347','#ff8cc8','#ffe066','#66d9e8','#a9e34b','#f783ac','#9aa7c7'];
+const history={tti:[], perUe:{}, util:[], jain:[]};
+
+function readOpts(){
+  return {algo:document.getElementById('p-algo').value,
+    bw:parseFloat(document.getElementById('p-bw').value),
+    pcfich:parseInt(document.getElementById('p-pcfich').value),
+    windowSize:Math.max(1,parseInt(document.getElementById('p-wsize').value)||100),
+    enableWindow:document.getElementById('p-window').checked,
+    maxDlUeTti:(v=>v>0?v:null)(parseInt(document.getElementById('p-maxue').value)||0),
+    wbUpd:Math.max(1,parseInt(document.getElementById('p-upd').value)||1)};
+}
+function buildWorld(uesSpec){
+  const o=readOpts();
+  const grid=new Grid(o.bw);
+  const sch=new Scheduler(o.algo,grid,o);
+  const ues={};
+  uesSpec.forEach(s=>{ const e=new UEState(s.id,s.cqi);
+    if(s.sb) e.sbCqi=s.sb.slice();
+    if(s.packets) s.packets.forEach(p=>e.addPacket(p));
+    if(s.avg!=null){ e.avgTput=s.avg; e.totalBits=s.total||0; e.currentTput=s.cur||0; e.lastBits=s.last||0; }
+    ues[s.id]=e; });
+  WORLD={grid,sch,ues,opts:o};
+  return WORLD;
+}
+function currentUesSpec(){
+  return Object.values(WORLD.ues).map(e=>({id:e.UE_ID,cqi:e.cqi,sb:e.sbCqi,packets:e.packets.slice(),
+    avg:e.avgTput,total:e.totalBits,cur:e.currentTput,last:e.lastBits}));
+}
+function rebuildKeepState(){ // смена алгоритма/параметров без потери UE
+  const spec=currentUesSpec(); const tti=TTI;
+  buildWorld(spec); TTI=tti;
+}
+function makeUsers(){
+  return Object.values(WORLD.ues).map(e=>({UE_ID:e.UE_ID,cqi:e.cqi,sbb_cqi:e.sbCqi,ue:e}));
+}
+function rand(a,b){ return a+Math.random()*(b-a); }
+function genTraffic(){
+  const lam=parseFloat(document.getElementById('p-lambda').value)||0;
+  const lo=parseInt(document.getElementById('p-pktmin').value)||100;
+  const hi=Math.max(lo,parseInt(document.getElementById('p-pktmax').value)||1500);
+  for(const e of Object.values(WORLD.ues)){
+    let n=Math.floor(lam); if(Math.random()<lam-n) n++;
+    for(let k=0;k<n;k++) e.addPacket(Math.round(rand(lo,hi)));
+  }
+}
+function driftChannel(){
+  const fd=document.getElementById('p-fd').checked;
+  for(const e of Object.values(WORLD.ues)){
+    e.cqi=Math.max(1,Math.min(15,e.cqi+Math.round(rand(-1.2,1.2))));
+    if(fd){ e.sbCqi=[]; for(let r=0;r<WORLD.grid.totalRbg;r++) e.sbCqi.push(Math.max(1,Math.min(15,e.cqi+Math.round(rand(-2.5,2.5))))); }
+    else e.sbCqi=[];
+  }
+}
+function runOneTti(quiet, noDrift){
+  WORLD.grid.resetSubframe(TTI+10); // очистить подкадр перед повторным использованием (кадр = 10)
+  const chInt=Math.max(1,parseInt(document.getElementById('p-chn').value)||5);
+  if(!noDrift && TTI>0 && TTI%chInt===0) driftChannel();
+  genTraffic(); // λ берётся из панели; λ=0 → пакетов нет (сценарий из отчёта точен)
+  const users=makeUsers();
+  lastRun=WORLD.sch.schedule(TTI,users);
+  recordHistory();
+  if(!quiet){
+    logLines(lastRun.log);
+    const anyAlloc=Object.values(lastRun.result.allocation||{}).some(v=>v.length>0);
+    if(!anyAlloc){
+      const lam=parseFloat(document.getElementById('p-lambda').value)||0;
+      const allEmpty=Object.values(WORLD.ues).every(e=>e.bufferSize()===0);
+      if(allEmpty&&lam===0) logLines(['[ПОДСКАЗКА] Буферы пусты и трафик λ=0 — пустой результат закономерен (планировать нечего). Добавьте пакеты кнопкой «📦 всем пакет» / «+» у UE, либо поставьте λ>0 — и нажмите «▶ 1 TTI» снова.']);
+    }
+    renderAll();
+  }
+  TTI++;
+  return lastRun;
+}
+function jainIndex(){
+  const xs=Object.values(WORLD.ues).map(e=>e.totalBits);
+  const s=xs.reduce((a,b)=>a+b,0), s2=xs.reduce((a,b)=>a+b*b,0);
+  return (s2>0)? (s*s)/(xs.length*s2) : 0;
+}
+function recordHistory(){
+  history.tti.push(TTI);
+  for(const e of Object.values(WORLD.ues)){ (history.perUe[e.UE_ID]=history.perUe[e.UE_ID]||[]).push(e.lastBits); }
+  history.util.push(lastRun.stats.dl_prb_utilization_pct||0);
+  history.jain.push(jainIndex());
+  const cap=400;
+  if(history.tti.length>cap){ history.tti.shift(); history.util.shift(); history.jain.shift();
+    Object.values(history.perUe).forEach(a=>a.shift()); }
+}
+
+/* ================= UI ================= */
+function el(id){ return document.getElementById(id); }
+function logLines(lines){
+  const box=el('log');
+  lines.forEach(t=>{ const cls=t.includes('WARNING')||t.includes('excluded')?'l-warn':(t.includes('Empty')?'l-err':(t.startsWith('[SCHEDULER')||t.startsWith('SCHEDULER'))?'l-stage':'');
+    box.innerHTML+='<div class="'+cls+'">'+t.replace(/</g,'&lt;')+'</div>'; });
+  box.scrollTop=box.scrollHeight;
+  while(box.childNodes.length>600) box.removeChild(box.firstChild);
+}
+function ueColor(id){ const ids=Object.keys(WORLD.ues).map(Number).sort((a,b)=>a-b); return UE_COLORS[ids.indexOf(id)%UE_COLORS.length]; }
+
+function renderUeTable(){
+  const tb=el('uetable').querySelector('tbody'); tb.innerHTML='';
+  Object.values(WORLD.ues).sort((a,b)=>a.UE_ID-b.UE_ID).forEach(e=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td><span class="lg-swatch" style="background:'+ueColor(e.UE_ID)+'"></span><b>'+e.UE_ID+'</b></td>'+
+      '<td><input type="number" min="1" max="15" value="'+e.cqi+'" data-f="cqi" data-id="'+e.UE_ID+'"></td>'+
+      '<td class="mono" id="buf-'+e.UE_ID+'">'+e.bufferSize()+' <span class="dim">('+e.packets.length+' пак.)</span></td>'+
+      '<td><input type="number" value="500" min="20" step="20" style="width:64px" data-f="pkt" data-id="'+e.UE_ID+'"> <button data-f="addpkt" data-id="'+e.UE_ID+'">+</button></td>'+
+      '<td class="mono small" id="avg-'+e.UE_ID+'">'+Math.round(e.avgTput)+'</td>'+
+      '<td><button data-f="del" data-id="'+e.UE_ID+'" class="danger" style="padding:2px 7px">✕</button></td>';
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('input,button').forEach(n=>{
+    const id=+n.dataset.id, f=n.dataset.f;
+    if(f==='cqi') n.addEventListener('change',()=>{ const e=WORLD.ues[id]; if(e){ e.cqi=Math.max(1,Math.min(15,+n.value||1)); if(document.getElementById('p-fd').checked){ e.sbCqi=[]; for(let r=0;r<WORLD.grid.totalRbg;r++) e.sbCqi.push(Math.max(1,Math.min(15,e.cqi+Math.round(rand(-2.5,2.5)))));} renderUeTable(); } });
+    if(f==='addpkt') n.addEventListener('click',()=>{ const inp=tb.querySelector('input[data-f="pkt"][data-id="'+id+'"]'); WORLD.ues[id].addPacket(Math.max(1,+inp.value||100)); renderUeTable(); renderGrid(); });
+    if(f==='del') n.addEventListener('click',()=>{ if(Object.keys(WORLD.ues).length>1){ stopAuto(); delete WORLD.ues[id]; rebuildKeepState(); renderAll(); } });
+  });
+}
+function updateUeCells(){
+  for(const e of Object.values(WORLD.ues)){
+    const b=el('buf-'+e.UE_ID), a=el('avg-'+e.UE_ID);
+    if(b) b.innerHTML=e.bufferSize()+' <span class="dim">('+e.packets.length+' пак.)</span>';
+    if(a) a.textContent=Math.round(e.avgTput);
+  }
+}
+function renderChips(){
+  const box=el('chips'); box.innerHTML='';
+  if(!lastRun) return;
+  lastRun.trace.forEach((t,i)=>{
+    const c=document.createElement('div'); c.className='chip'+(i===stepIdx?' active':'');
+    c.innerHTML='<b>'+t.stage+'</b>'+t.title;
+    c.onclick=()=>{ stopAuto(); stepIdx=i; renderChips(); renderStage(); };
+    box.appendChild(c);
+  });
+}
+function renderStage(){
+  const box=el('stagebox');
+  if(!lastRun||stepIdx<0||!lastRun.trace[stepIdx]){ box.innerHTML='<span class="dim">Прогони TTI — здесь появится разбор текущего этапа.</span>'; return; }
+  const t=lastRun.trace[stepIdx];
+  box.innerHTML='<div style="margin-bottom:8px"><b class="info">ЭТАП '+t.stage+'</b> <span class="mono small">'+t.name+'</span> — '+t.title+'</div>'+(t.html||'');
+  if(t.events&&t.events.length) animateGrid(t.events);
+  if(t.name==='_process_buffers') renderUeTable();
+}
+function renderGrid(fillEvents){
+  const gv=el('gridview'), rs=el('rbstrip');
+  gv.innerHTML=''; rs.innerHTML='';
+  const g=WORLD.grid, sub=(Math.max(TTI,1)-1)%10;
+  el('gridsub').textContent=sub;
+  for(let r=0;r<g.totalRbg;r++){
+    const idx=g.rbgIndices(r);
+    let owner=null; for(const f of idx){ const o=g.occ[sub+':'+f]; if(o!==undefined){owner=o;break;} }
+    const d=document.createElement('div'); d.className='rbg'+(owner!==null?' own':'');
+    if(owner!==null){ d.style.background=ueColor(owner); }
+    d.innerHTML='<b>RBG '+r+'</b><span>'+(owner!==null?('UE'+owner):'RB '+idx[0]+'–'+idx[idx.length-1])+'</span>';
+    d.title='RBG '+r+': RB '+idx.join(', ')+(owner!==null?' → UE'+owner:' свободно');
+    gv.appendChild(d);
+  }
+  for(let f=0;f<g.rbPerSlot;f++){
+    const o=g.occ[sub+':'+f];
+    const d=document.createElement('div'); d.className='rb'+(o!==undefined?' own':'');
+    if(o!==undefined) d.style.background=ueColor(o);
+    d.title='RB '+f+(o!==undefined?' → UE'+o+':'+o:'');
+    rs.appendChild(d);
+  }
+  el('gridhint').textContent=g.rbPerSlot+' RB · '+g.totalRbg+' RBG (по '+g.rbgSize+' RB) · подкадр '+sub+' · оба слота одинаковы';
+}
+function animateGrid(events){
+  renderGrid();
+  const cells=el('gridview').children;
+  events.forEach((e,k)=>{ setTimeout(()=>{ const c=cells[e.rbg]; if(c){ c.className='rbg own'; c.style.background=ueColor(e.ue);
+      c.innerHTML='<b>RBG '+e.rbg+'</b><span>UE'+e.ue+(e.cqi?' · cqi'+e.cqi:'')+'</span>'; } }, 120*k); });
+}
+function renderDiff(){
+  const box=el('diffbox');
+  if(!lastRun){ box.textContent='—'; return; }
+  let h='<table><tr><th>UE</th><th>буфер</th><th>current</th><th>EWMA avg</th><th>total bits</th></tr>';
+  for(const id of Object.keys(lastRun.before)){
+    const b=lastRun.before[id], a=lastRun.after[id];
+    h+='<tr><td><span class="lg-swatch" style="background:'+ueColor(+id)+'"></span>UE'+id+'</td>'+
+      '<td class="mono">'+b.buf+'→<b class="'+(a.buf<b.buf?'ok':'dim')+'">'+a.buf+'</b></td>'+
+      '<td class="mono">'+Math.round(b.cur/1000)+'→<b>'+Math.round(a.cur/1000)+'</b> кбит/с</td>'+
+      '<td class="mono">'+Math.round(b.avg)+'→<b>'+Math.round(a.avg)+'</b></td>'+
+      '<td class="mono">'+b.total+'→<b>'+(a.total)+'</b>'+(a.total>b.total?' <span class="ok">(+'+(a.total-b.total)+')</span>':'')+'</td></tr>';
+  }
+  box.innerHTML=h+'</table>';
+}
+function renderStats(){
+  const box=el('statsbox');
+  if(!lastRun){ box.textContent='—'; return; }
+  const s=lastRun.stats, a=lastRun.amc, p=lastRun.pdcchStats;
+  box.textContent=
+'get_stats():\n'+JSON.stringify(s,null,1)+'\n\namc.get_stats():\n'+JSON.stringify(a,null,1)+'\n\npdcch.get_stats():\n'+JSON.stringify(p,null,1);
+}
+function renderChart(){
+  const cv=el('chart'); if(!cv) return; const ctx=cv.getContext('2d'); if(!ctx) return;
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='#2a3658'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){ const y=8+i*(H-26)/4; ctx.beginPath(); ctx.moveTo(30,y); ctx.lineTo(W-6,y); ctx.stroke(); }
+  const ids=Object.keys(history.perUe);
+  if(!history.tti.length||!ids.length) return;
+  let mx=1; ids.forEach(id=>history.perUe[id].forEach(v=>{if(v>mx)mx=v;}));
+  ctx.fillStyle='#6c7aa0'; ctx.font='10px monospace';
+  for(let i=0;i<=4;i++){ const y=8+i*(H-26)/4; ctx.fillText(String(Math.round(mx*(1-i/4))),2,y+3); }
+  ids.forEach((id,k)=>{
+    const arr=history.perUe[id], col=(WORLD.ues[id]?ueColor(+id):UE_COLORS[k%UE_COLORS.length]);
+    ctx.strokeStyle=col; ctx.lineWidth=1.6; ctx.beginPath();
+    arr.forEach((v,i)=>{ const x=30+i*(W-40)/Math.max(1,arr.length-1), y=8+(H-26)*(1-v/mx); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+    ctx.stroke();
+  });
+  const leg=el('legend');
+  leg.innerHTML=ids.map((id,k)=>'<span><span class="lg-swatch" style="background:'+(WORLD.ues[id]?ueColor(+id):UE_COLORS[k%UE_COLORS.length])+'"></span>UE'+id+' (total '+(WORLD.ues[id]?WORLD.ues[id].totalBits:'—')+' бит)</span>').join('')+
+    '<span class="dim">· Jain по total bits: <b class="ok">'+jainIndex().toFixed(4)+'</b></span>';
+  const last=lastRun&&lastRun.stats?lastRun.stats:{};
+  el('readouts').innerHTML='<span>TTI: <b>'+(TTI)+'</b></span><span>PRB util: <b>'+(last.dl_prb_utilization_pct||0)+'%</b></span>'+
+    '<span>CCE: <b>'+(lastRun?lastRun.pdcchStats.pdcch_cce_allocated_count:0)+'/'+(lastRun?lastRun.pdcchStats.pdcch_cce_total_count:0)+'</b></span>'+
+    '<span>Jain (долг.): <b class="ok">'+jainIndex().toFixed(4)+'</b></span>';
+}
+function renderAll(){
+  el('ttiname').textContent='· следующий TTI = '+TTI;
+  el('bwinfo').textContent=WORLD.grid.rbPerSlot+' RB, '+WORLD.grid.totalRbg+' RBG';
+  el('cceinfo').textContent=WORLD.sch.pdcch.totalCce+' CCE';
+  renderUeTable(); renderChips(); renderStage(); renderGrid(); renderDiff(); renderStats(); renderChart();
+}
+
+/* ================= КНОПКИ / РЕЖИМЫ ================= */
+function autoSummary(){
+  const s=(lastRun&&lastRun.stats)||{}, p=(lastRun&&lastRun.pdcchStats)||{};
+  const al=(lastRun&&lastRun.result&&lastRun.result.allocation)||{};
+  const served=Object.keys(al).filter(k=>(al[k]||[]).length).map(k=>'UE'+k);
+  return '[TTI '+(lastRun?lastRun.tti:'?')+'] elig='+(s.sch_eligible_ue_count||0)+
+    ' · active='+(s.sch_active_ue_count||0)+' · RB='+(s.dl_rb_allocated_count||0)+
+    ' ('+(s.dl_prb_utilization_pct||0)+'%) · CCE='+(p.pdcch_cce_allocated_count||0)+'/'+(p.pdcch_cce_total_count||0)+
+    (served.length?' · выдано: '+served.join(', '):' · пусто');
+}
+function stopAuto(){ if(autoTimer){ clearInterval(autoTimer); autoTimer=null; el('btn-auto').textContent='⏩ Auto (50 TTI)'; el('btn-auto').classList.remove('danger'); } }
+function defaultSpec(){ return [{id:1,cqi:13,packets:[1000]},{id:2,cqi:7,packets:[5000]},{id:3,cqi:15,packets:[300]}]; }
+function fullReset(scenario){
+  stopAuto();
+  TTI=0; lastRun=null; stepIdx=-1;
+  history.tti.length=0; history.util.length=0; history.jain.length=0;
+  Object.keys(history.perUe).forEach(k=>delete history.perUe[k]);
+  el('log').innerHTML='';
+  if(scenario){
+    el('p-algo').value='BestCQI'; el('p-bw').value='10'; el('p-pcfich').value='2';
+    el('p-window').checked=true; el('p-wsize').value=100; el('p-maxue').value='';
+    el('p-upd').value=1; el('p-fd').checked=false; el('p-lambda').value=0;
+    buildWorld(defaultSpec());
+    logLines(['=== Сценарий из отчёта: BestCQI · 10 МГц · PCFICH=2 · 3 UE · буферы 1000/5000/300 Б ===']);
+    TTI = 5;                    // сценарий отчёта — одиночный вызов schedule(5, users)
+    runOneTti(false, true);     // без дрейфа канала и трафика
+    stepIdx = 0;
+    renderAll();
+    logLines(['=== TTI 5 выполнен: листай этапы чипами или кнопкой «⏵ Шаг» ===']);
+  } else {
+    buildWorld([{id:1,cqi:12,packets:[800]},{id:2,cqi:8,packets:[1200]},{id:3,cqi:14,packets:[400]}]);
+    renderAll();
+  }
+}
+el('btn-run').onclick=()=>{ stopAuto(); stepIdx=-1; runOneTti(false); stepIdx=lastRun.trace.length-1; renderChips(); renderStage(); };
+el('btn-step').onclick=()=>{
+  stopAuto();
+  if(!lastRun){ runOneTti(true); stepIdx=-1; }
+  stepIdx=(stepIdx+1)%lastRun.trace.length; renderChips(); renderStage();
+};
+el('btn-auto').onclick=function(){
+  if(autoTimer){ stopAuto(); return; }
+  if((parseFloat(el('p-lambda').value)||0)===0){
+    el('p-lambda').value='0.5';
+    logLines(['[AUTO] Включён трафик λ=0.5 (было 0 — буферы опустели бы и все TTI стали бы пустыми)']);
+  }
+  this.textContent='⏹ Стоп'; this.classList.add('danger');
+  const speed=()=>820-(+el('p-speed').value);
+  let n=0;
+  autoTimer=setInterval(()=>{
+    runOneTti(true); n++;
+    el('ttiname').textContent='· следующий TTI = '+TTI;
+    logLines([autoSummary()]);
+    updateUeCells(); renderGrid(); renderDiff(); renderStats(); renderChart();
+    stepIdx=lastRun.trace.length-1; renderChips(); renderStage();
+    if(n>=50){ stopAuto(); logLines(['[AUTO] завершено: 50 TTI']); renderAll(); }
+  }, speed());
+};
+el('btn-scenario').onclick=()=>fullReset(true);
+el('btn-reset').onclick=()=>fullReset(false);
+el('btn-addue').onclick=()=>{
+  stopAuto();
+  const ids=Object.keys(WORLD.ues).map(Number);
+  const nid=Math.max(0,...ids)+1;
+  WORLD.ues[nid]=new UEState(nid,Math.round(rand(4,15)));
+  WORLD.ues[nid].addPacket(Math.round(rand(300,2000)));
+  rebuildKeepState(); renderAll();
+};
+el('btn-randcqi').onclick=()=>{ Object.values(WORLD.ues).forEach(e=>e.cqi=Math.round(rand(1,15))); driftChannelIfNeeded(); renderUeTable(); };
+el('btn-fillbuf').onclick=()=>{ Object.values(WORLD.ues).forEach(e=>e.addPacket(Math.round(rand(300,2000)))); renderUeTable(); };
+function driftChannelIfNeeded(){ if(document.getElementById('p-fd').checked){ Object.values(WORLD.ues).forEach(e=>{ e.sbCqi=[]; for(let r=0;r<WORLD.grid.totalRbg;r++) e.sbCqi.push(Math.max(1,Math.min(15,e.cqi+Math.round(rand(-2.5,2.5))))); }); } }
+['p-algo','p-bw','p-pcfich','p-window','p-wsize','p-maxue','p-upd'].forEach(id=>{
+  el(id).addEventListener('change',()=>{
+    stopAuto();
+    try{
+      const keep=TTI; rebuildKeepState(); TTI=keep; lastRun=null; stepIdx=-1; renderAll();
+      logLines(['[CONFIG] параметры изменены — планировщик пересоздан (состояние UE/буферы сохранены)']);
+    }catch(err){
+      logLines(['[CONFIG] ОШИБКА: '+err.message+' — параметры несовместимы (как и в Python: _validate_parameters). Например, для 1.4 МГц допустим PCFICH 2/3/4. Верните прежнее значение.']);
+    }
+  });
+});
+el('p-speed').addEventListener('change',()=>{ if(autoTimer){ stopAuto(); logLines(['[AUTO] скорость изменена — перезапуск']); el('btn-auto').click(); } });
+el('p-fd').addEventListener('change',()=>{ driftChannelIfNeeded(); logLines(['[CONFIG] SB-CQI '+(document.getElementById('p-fd').checked?'включены (FD-алгоритмы получат частотную селективность)':'выключены')]); });
+
+/* ================= САМОТЕСТ (сверка с Python-прогоном) ================= */
+function selfTest(){
+  const o={algo:'BestCQI',bw:10,pcfich:2,windowSize:100,enableWindow:true,maxDlUeTti:null,wbUpd:1};
+  const g=new Grid(10), s=new Scheduler('BestCQI',g,o);
+  const ues={};
+  [[1,13,1000],[2,7,5000],[3,15,300]].forEach(([id,cqi,buf])=>{ const e=new UEState(id,cqi); e.addPacket(buf); ues[id]=e; });
+  const users=[1,2,3].map(id=>({UE_ID:id,cqi:ues[id].cqi,sbb_cqi:[],ue:ues[id]}));
+  const r=s.schedule(5,users);
+  const a=r.result.allocation;
+  const ok = a[3].join()=== [0,1,2,3,4,5].join() && a[1].join()=== [6,7,8,9,10,11,12,13,14,15,16,17].join() && a[2].length===0
+    && ues[1].lastBits===8004 && ues[3].lastBits===2404 && Math.round(ues[1].avgTput)===16008 && Math.round(ues[3].avgTput)===4808
+    && r.result.pdcch_stats.pdcch_cce_allocated_count===2 && r.amc.dl_capacity_bits_sum_tti===13848
+    && r.amc.dl_transmitted_bits_sum_tti===10408 && r.stats.dl_prb_utilization_pct===36;
+  return {ok, a:{1:a[1].length,2:a[2].length,3:a[3].length}, tx1:ues[1].lastBits, tx3:ues[3].lastBits,
+    avg1:Math.round(ues[1].avgTput), avg3:Math.round(ues[3].avgTput)};
+}
+
+/* тест для headless-проверки (node/jsdom) */
+if(typeof window!=='undefined') window.SIM={selfTest, Scheduler, Grid, UEState, PDCCHManager, bitsPerRB,
+  CCE_TABLE, CQI_TO_MCS, fullReset, runOneTti, get TTI(){return TTI;}, get WORLD(){return WORLD;}, get lastRun(){return lastRun;}};
+
+fullReset(false);
+</script>
+</body>
+</html>

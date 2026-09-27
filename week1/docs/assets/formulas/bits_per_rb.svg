@@ -1,9 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330">
-<defs>
-  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#2a3658" stroke-width="1" opacity="0.22"/></pattern>
-  <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<rect width="1200" height="330" fill="#0d1222"/>
-<rect width="1200" height="330" fill="url(#grid)"/>
-
-<text x="70" y="125" fill="#e6ecff" font-family="DejaVu Sans" font-size="42px" font-weight="700" text-anchor="start">bits/RB =</text><text x="330" y="95" fill="#4edcff" font-family="DejaVu Sans" font-size="40px" font-weight="700" text-anchor="middle">RE</text><text x="330" y="145" fill="#9aa9c8" font-family="DejaVu Sans" font-size="19px" font-weight="400" text-anchor="middle">на RB</text><text x="405" y="125" fill="#9aa9c8" font-family="DejaVu Sans" font-size="36px" font-weight="600" text-anchor="middle">×</text><text x="495" y="95" fill="#b88cff" font-family="DejaVu Sans" font-size="40px" font-weight="700" text-anchor="middle">Qm</text><text x="495" y="145" fill="#9aa9c8" font-family="DejaVu Sans" font-size="19px" font-weight="400" text-anchor="middle">бит/символ</text><text x="570" y="125" fill="#9aa9c8" font-family="DejaVu Sans" font-size="36px" font-weight="600" text-anchor="middle">×</text><text x="660" y="95" fill="#7de3b2" font-family="DejaVu Sans" font-size="40px" font-weight="700" text-anchor="middle">R</text><text x="660" y="145" fill="#9aa9c8" font-family="DejaVu Sans" font-size="19px" font-weight="400" text-anchor="middle">code rate</text><text x="750" y="125" fill="#ffb86b" font-family="DejaVu Sans" font-size="28px" font-weight="600" text-anchor="start">− служебные RE</text><text x="70" y="260" fill="#e6ecff" font-family="DejaVu Sans" font-size="25px" font-weight="400" text-anchor="start">В SCHEDULER.py число RE уменьшается с учётом PCFICH и CRS.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="250" viewBox="0 0 1000 250">
+  <defs>
+    <linearGradient id="fsheenbits_per_rb" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4edcff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#4edcff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#4edcff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="fclipbits_per_rb"><rect width="1000" height="250" rx="16"/></clipPath>
+    <style><![CDATA[
+      .fswbits_per_rb{animation:fswpbits_per_rb 6s linear infinite}
+      @keyframes fswpbits_per_rb{from{transform:translateX(-320px)}to{transform:translateX(1000px)}}
+    ]]></style>
+  </defs>
+  <rect width="1000" height="250" rx="16" fill="#0d1222"/>
+  <g clip-path="url(#fclipbits_per_rb)"><rect class="fswbits_per_rb" x="0" y="0" width="300" height="250" fill="url(#fsheenbits_per_rb)"/></g>
+  <rect x="0" y="14" width="6" height="222" rx="3" fill="#4edcff" opacity=".75">
+    <animate attributeName="opacity" values=".4;.9;.4" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect width="1000" height="250" rx="16" fill="none" stroke="#4edcff" stroke-opacity=".35"/>
+  <text x="44" y="42" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14" font-weight="700" letter-spacing="3" fill="#6c7aa0">ЁМКОСТЬ RB · AMC.GET_BITS_PER_RB :1700</text>
+  <text x="44" y="80" font-family="'Cambria Math', Georgia, serif" font-size="24" fill="#e8eeff">RE = [(7 − PCFICH) · 12 − 4·n<tspan baseline-shift="sub" font-size="18">ports</tspan>] + [7 · 12 − 4·n<tspan baseline-shift="sub" font-size="18">ports</tspan>]</text><text x="44" y="128" font-family="'Cambria Math', Georgia, serif" font-size="24" fill="#e8eeff">bits/RB = ⌊RE · Q<tspan baseline-shift="sub" font-size="18">m</tspan> · R⌋     (10 МГц, PCFICH=2: RE = 136)</text><text x="44" y="176" font-family="'Cambria Math', Georgia, serif" font-size="24" fill="#e8eeff">CQI 15 → 798 бит/RB · CQI 13 → 755 · CQI 7 → 326</text>
+</svg>
