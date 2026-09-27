@@ -17,31 +17,13 @@
 
 ## Интерактивная модель
 
-[`interactive/scheduler_playground.html`](interactive/scheduler_playground.html) — интерактивная модель планировщика на основе кода `SCHEDULER.py`. Открой в браузере (файл полностью автономен, интернет не нужен):
+[`interactive/scheduler_playground.html`](interactive/scheduler_playground.html) — интерактивная модель планировщика на основе кода `SCHEDULER.py`.
 
 - пошаговое проигрывание всех этапов `schedule()` (чипы этапов, «⏵ Шаг») с состоянием каждого этапа;
 - все 6 алгоритмов; параметры: полоса, PCFICH, окно, лимит UE/TTI, интервал обновления CQI;
 - редактируемые CQI и буферы UE; кнопка «📌 Сценарий из отчёта» воспроизводит числа §6;
 - режим Auto: до 50 TTI с генерацией трафика (λ, размер пакетов) и дрейфом канала, графики throughput по UE, Jain's Index, утилизация PRB/CCE;
 - verbose-лог, `get_stats()`/`amc.get_stats()`/`pdcch.get_stats()` и Δ состояния UE за каждый TTI.
-
-### Публикация симулятора на GitHub Pages (только HTML, без всего репозитория)
-
-GitHub Pages не рендерит markdown (отдаёт `.md` как простой текст), поэтому публиковать на Pages имеет смысл только симулятор. Делается одноразово через отдельную ветку `gh-pages`, в которой лежит один файл:
-
-```bash
-git clone https://github.com/dokbrawn/REC-S5.git && cd REC-S5
-git checkout --orphan gh-pages     # ветка без истории и без файлов main
-git rm -rf .                        # очистить рабочую копию
-cp week2/interactive/scheduler_playground.html index.html
-git add index.html
-git commit -m "gh-pages: scheduler playground"
-git push origin gh-pages
-```
-
-Затем в репозитории: **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `gh-pages` / `(root)` → Save**. Через 1–2 минуты симулятор будет доступен по адресу <https://dokbrawn.github.io/REC-S5/> — именно он встроен iframe'ом в отчёт (в Obsidian откроется прямо в заметке).
-
-Отчёт при этом читается как обычно: на github.com (рендер markdown) или в Obsidian.
 
 ## Оформление
 
