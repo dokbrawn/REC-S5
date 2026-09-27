@@ -606,13 +606,11 @@ SCHEDULER [Window] TTI window: 3/3 UE selected, order: [1, 2, 3]..., rotated 3 U
 > Прогон воспроизводим: `PYSCHEDULER_PATH=<путь до PyScheduler> python3 scripts/scenario_tti5.py` (нужен numpy). Скрипт печатает состояние до/после, verbose-лог, `get_stats()`, `amc.get_stats()`, `cqi_map` и занятость сетки — всё, что цитируется в этом разделе.
 
 > [!TIP]
-> **Интерактивная модель планировщика:** [`interactive/scheduler_playground.html`](../interactive/scheduler_playground.html) — модель на основе кода `SCHEDULER.py`. Пошаговое проигрывание всех этапов `schedule()` с логами и состоянием каждого этапа, все 6 алгоритмов, параметры (полоса, PCFICH, окно, лимит UE/TTI, интервал CQI), редактируемые CQI и буферы, мульти-TTI режим с генерацией трафика и дрейфом канала, графики throughput и Jain's Index. Кнопка «📌 Сценарий из отчёта» воспроизводит числа этого раздела. Файл автономен — можно просто открыть локально в браузере.
+> **Интерактивная модель планировщика:** [`interactive/scheduler_playground.html`](../interactive/scheduler_playground.html) — модель на основе кода `SCHEDULER.py`. Пошаговое проигрывание всех этапов `schedule()` с логами и состоянием каждого этапа, все 6 алгоритмов, параметры (полоса, PCFICH, окно, лимит UE/TTI, интервал CQI), редактируемые CQI и буферы, мульти-TTI режим с генерацией трафика и дрейфом канала, графики throughput и Jain's Index.
 
 **Живой симулятор** (в Obsidian отрисуется прямо в заметке; на GitHub iframe не отображается — там используйте ссылку):
 
 [↗ Открыть симулятор в новой вкладке](https://dokbrawn.github.io/REC-S5/)
-
-<iframe src="https://dokbrawn.github.io/REC-S5/" width="100%" height="860" style="border:1px solid #2a3658;border-radius:10px;background:#0d1222" title="SCHEDULER.py playground"></iframe>
 
 > 📄 **Документация:** прогон [`scripts/scenario_tti5.py`](../scripts/scenario_tti5.py) · таблицы полосы и RBG: TS 36.211 Table 5.6-1, TS 36.213 Table 7.1.6.1-1 · CCE при 10 МГц: таблица [`_calculate_total_cce`](https://github.com/sherokiddo/project_py_scheduler/blob/dev/PyScheduler/SCHEDULER.py#L1317) (в коде помечена как LTE Release 15 Scheduler Design Document, Table 8)
 
