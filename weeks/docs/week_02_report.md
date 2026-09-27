@@ -610,7 +610,7 @@ SCHEDULER [Window] TTI window: 3/3 UE selected, order: [1, 2, 3]..., rotated 3 U
 
 **Живой симулятор**
 
-[↗ Открыть симулятор в новой вкладке](https://dokbrawn.github.io/REC-S5/)
+[↗ Открыть симулятор в новой вкладке](https://github.com/dokbrawn/REC-S5/blob/main/weeks/interactive/scheduler_playground.html)
 
 > 📄 **Документация:** прогон [`scripts/scenario_tti5.py`](../scripts/scenario_tti5.py) · таблицы полосы и RBG: TS 36.211 Table 5.6-1, TS 36.213 Table 7.1.6.1-1 · CCE при 10 МГц: таблица [`_calculate_total_cce`](https://github.com/sherokiddo/project_py_scheduler/blob/dev/PyScheduler/SCHEDULER.py#L1317) (в коде помечена как LTE Release 15 Scheduler Design Document, Table 8)
 
