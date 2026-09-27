@@ -608,7 +608,7 @@ SCHEDULER [Window] TTI window: 3/3 UE selected, order: [1, 2, 3]..., rotated 3 U
 > [!TIP]
 > **Интерактивная модель планировщика:** [`interactive/scheduler_playground.html`](../interactive/scheduler_playground.html) — модель на основе кода `SCHEDULER.py`. Пошаговое проигрывание всех этапов `schedule()` с логами и состоянием каждого этапа, все 6 алгоритмов, параметры (полоса, PCFICH, окно, лимит UE/TTI, интервал CQI), редактируемые CQI и буферы, мульти-TTI режим с генерацией трафика и дрейфом канала, графики throughput и Jain's Index.
 
-**Живой симулятор** (в Obsidian отрисуется прямо в заметке; на GitHub iframe не отображается — там используйте ссылку):
+**Живой симулятор**
 
 [↗ Открыть симулятор в новой вкладке](https://dokbrawn.github.io/REC-S5/)
 
