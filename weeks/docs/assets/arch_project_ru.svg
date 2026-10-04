@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="780" viewBox="0 0 1560 780">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6c7aa0"/></marker>
+    <marker id="arrg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#7de3b2"/></marker>
+    <marker id="arrr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#ff8cc8"/></marker>
+  </defs>
+  <rect width="1560" height="780" rx="18" fill="#0d1222"/>
+  <rect width="1560" height="780" rx="18" fill="none" stroke="#b88cff" stroke-opacity=".22"/>
+  <text x="50" y="52" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="26" font-weight="900" fill="#b88cff">srsRAN PROJECT: ОДИН NR-СЛОТ</text>
+  <text x="50" y="80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="15.5" fill="#9aa7c7">control-first: PDCCH резервируется до PRB; любой провал откатывается; UE группируются по слайсам</text>
+  <text x="70" y="118" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="17" font-weight="800" fill="#e8eeff">cell_scheduler::run_slot :92 — общие каналы раньше пользовательских данных</text><g>
+      <rect x="70" y="136" width="150" height="52" rx="12" fill="#101830" stroke="#4edcff" stroke-opacity="0.6" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="3s" begin="0.0s" repeatCount="indefinite"/>
+      </rect>
+      <text x="145.0" y="168" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" fill="#4edcff">SSB :115</text>
+    </g><path d="M224 162 L258 162" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="264" y="136" width="150" height="52" rx="12" fill="#101830" stroke="#4edcff" stroke-opacity="0.6" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="3s" begin="0.3s" repeatCount="indefinite"/>
+      </rect>
+      <text x="339.0" y="168" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" fill="#4edcff">CSI :118</text>
+    </g><path d="M418 162 L452 162" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="458" y="136" width="150" height="52" rx="12" fill="#101830" stroke="#7de3b2" stroke-opacity="0.6" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="3s" begin="0.6s" repeatCount="indefinite"/>
+      </rect>
+      <text x="533.0" y="168" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" fill="#7de3b2">SI :121</text>
+    </g><path d="M612 162 L646 162" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="652" y="136" width="150" height="52" rx="12" fill="#101830" stroke="#7de3b2" stroke-opacity="0.6" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="3s" begin="0.8999999999999999s" repeatCount="indefinite"/>
+      </rect>
+      <text x="727.0" y="168" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" fill="#7de3b2">PRACH :124</text>
+    </g><path d="M806 162 L840 162" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="846" y="136" width="150" height="52" rx="12" fill="#101830" stroke="#ffb347" stroke-opacity="0.6" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="3s" begin="1.2s" repeatCount="indefinite"/>
+      </rect>
+      <text x="921.0" y="168" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" fill="#ffb347">RA :127</text>
+    </g><path d="M1000 162 L1034 162" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="1040" y="136" width="150" height="52" rx="12" fill="#101830" stroke="#ffb347" stroke-opacity="0.6" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+      </rect>
+      <text x="1115.0" y="168" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" fill="#ffb347">PG :130</text>
+    </g><path d="M1194 162 L1228 162" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="1234" y="136" width="150" height="52" rx="12" fill="#101830" stroke="#ff8cc8" stroke-opacity="0.6" stroke-width="1.5">
+        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="3s" begin="1.7999999999999998s" repeatCount="indefinite"/>
+      </rect>
+      <text x="1309.0" y="168" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" fill="#ff8cc8">UE :133</text>
+    </g><g>
+      <rect x="70" y="220" width="640" height="116" rx="12" fill="#101830" stroke="#b88cff" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="390.0" y="247" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="17.5" font-weight="800" fill="#b88cff">ue_scheduler_impl::run_slot :94</text><text x="390.0" y="268" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">while (slice = slice_sched.get_next_dl_candidate())</text><text x="390.0" y="287" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">intra_slice_sched.dl_sched(slice, policy) :96</text><text x="390.0" y="306" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">политики слайса: time-RR / time-QoS :106</text></g><path d="M390 190 L390 218" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="70" y="380" width="640" height="150" rx="12" fill="#101830" stroke="#7de3b2" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="390.0" y="406" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="17" font-weight="800" fill="#7de3b2">Stage 1 · preselect + PDCCH-резерв :468</text><text x="390.0" y="427" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">UE отсортированы по priority :411–446, retx раньше newtx :299</text><text x="390.0" y="446" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">allocate_dl_grant → alloc_dl_pdcch :188 (контроль первым)</text><text x="390.0" y="465" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">PUCCH насытился → эвристика: только UE с будущим PUCCH :472</text><text x="390.0" y="484" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">лимит попыток max_pdcch_alloc_attempts_per_slot :510</text></g><path d="M390 338 L390 378" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="70" y="574" width="640" height="130" rx="12" fill="#101830" stroke="#ffb347" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="390.0" y="600" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="17" font-weight="800" fill="#ffb347">Stage 2 · CRB, MCS, слои :520</text><text x="390.0" y="621" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">rbs_to_alloc делится между отобранными грантами</text><text x="390.0" y="640" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">recommended_vrbs → VRB, затем VRB→CRB в сетке</text><text x="390.0" y="659" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13.5" fill="#9aa7c7">провал PRB → «Cancel associated grants» :255</text></g><path d="M390 532 L390 572" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><rect x="770" y="212" width="720" height="492" rx="16" fill="#1b2648" fill-opacity="0.3" stroke="#ff8cc8" stroke-opacity="0.35"/><text x="1130" y="248" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="19" font-weight="900" fill="#ff8cc8">КОНТРОЛЬ ПЕРВЫМ — И ПОЛНЫЕ ОТКАТЫ</text><g>
+      <rect x="810" y="270" width="640" height="72" rx="12" fill="#101830" stroke="#b88cff" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="1130.0" y="294" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="800" fill="#b88cff">alloc_dl_pdcch :188</text><text x="1130.0" y="315" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">агрегация из wideband CQI (link adaptation)</text><text x="1130.0" y="334" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">alloc_dl_pdcch_ue :101 — кандидаты поисковых пространств</text></g><path d="M1130 344 L1130 362" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="810" y="366" width="640" height="72" rx="12" fill="#101830" stroke="#ff8cc8" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="1130.0" y="390" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="800" fill="#ff8cc8">провал UCI/PUCCH :199</text><text x="1130.0" y="411" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">cancel_last_pdcch — DCI снимается</text><text x="1130.0" y="430" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">грант не создаётся, слот продолжается</text></g><path d="M1130 440 L1130 458" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="810" y="462" width="640" height="72" rx="12" fill="#101830" stroke="#ff8cc8" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="1130.0" y="486" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="800" fill="#ff8cc8">провал PRB в Stage 2 :255</text><text x="1130.0" y="507" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">grant.pdcch-&gt;ctx.rnti = INVALID_RNTI :256</text><text x="1130.0" y="526" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">pdsch_cfg.rnti = INVALID_RNTI :257 — грант выключен</text></g><path d="M1130 536 L1130 554" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="810" y="558" width="640" height="72" rx="12" fill="#101830" stroke="#4edcff" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="1130.0" y="582" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="800" fill="#4edcff">кандидаты CCE :41–57</text><text x="1130.0" y="603" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">pdcch_candidates_common_ss_get_lowest_cce :45</text><text x="1130.0" y="622" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">cce_to_prb_mapping :50 — CCE связаны с PRB</text></g><path d="M1130 632 L1130 650" stroke="#6c7aa0" stroke-width="2" marker-end="url(#arr)"/><g>
+      <rect x="810" y="654" width="640" height="72" rx="12" fill="#101830" stroke="#4edcff" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="1130.0" y="678" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="16" font-weight="800" fill="#4edcff">skip_slot / skip_ue</text><text x="1130.0" y="699" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">CORESET исчерпан → ошибка skip_slot :114</text><text x="1130.0" y="718" text-anchor="middle" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="13" fill="#9aa7c7">лимит попыток — защита от перебора :510</text></g><path d="M712 455 L804 330" stroke="#ff8cc8" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arr)"/>
+  <text x="50" y="762" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#6c7aa0">Все номера — lib/scheduler/ ветки main: cell_scheduler.cpp, ue_scheduling/ue_scheduler_impl.cpp, intra_slice_scheduler.cpp, ue_cell_grid_allocator.cpp, pdcch_scheduling/pdcch_resource_allocator_impl.cpp.</text>
+</svg>
