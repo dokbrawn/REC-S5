@@ -10,7 +10,6 @@
 
 Дополнительные материалы:
 
-- [`docs/discussion_allocation_order.md`](docs/discussion_allocation_order.md) — записка к обсуждению: порядок аллокации DL «PDCCH → PDSCH» против «PDSCH → PDCCH» — что говорит 3GPP, как сделано в srsRAN 4G (data-first + атомарный commit) и srsRAN Project (control-first + откаты), вопросы к решению.
 - [`interactive/scheduler_playground.html`](interactive/scheduler_playground.html) — интерактивная модель планировщика на основе кода `SCHEDULER.py`: полностью автономный файл.
 - [`scripts/scenario_tti5.py`](scripts/scenario_tti5.py) — скрипт стенда из отчёта Week 02 §6: собирает ресурсы, BS и трёх UE, вызывает `schedule(5, users)` и печатает состояние до/после, verbose-лог и статистику.
 
