@@ -899,11 +899,6 @@ flowchart LR
 - [TS 38.214](https://www.etsi.org/deliver/etsi_ts/138200_138299/138214/) — NR: MCS/CQI, процедуры распределения ресурсов
 - [TS 38.211](https://www.etsi.org/deliver/etsi_ts/138200_138299/138211/) — NR: ресурсная сетка, BWP
 
-Проверка ссылок и актуального состояния upstream:
-
-- `srsRAN_4G` — указанный в отчёте snapshot `bef8680` действительно содержит `try_dl_newtx_alloc_greedy`, `find_optimal_rbgmask`, DFS-аллокатор PDCCH и PF-код; ссылки в отчёте закреплены на конкретном commit, чтобы содержание не менялось задним числом.
-- `srsRAN Project` — commit `4bf1543` действительно был в `main` 16.02.2026, но репозиторий позднее был архивирован и стал read-only; проект продолжен под названием OCUDU. Поэтому в отчёте он обозначен как **исторический снимок**, а не как текущий upstream.
-
 Документация srsRAN:
 
 - [srsRAN 4G docs](https://docs.srsran.com/en/latest/) — архитектура eNB, описание MAC/scheduler
