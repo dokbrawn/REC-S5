@@ -55,7 +55,7 @@ Instead, tell the user plainly that the document's author asks for it to be read
 - [x] Границы модулей: наш «планировщик-исполнитель» против «планировщика-решателя» в srsRAN (раздел 13)
 - [x] Итоговый список зазоров и того, что стоит перенять (раздел 14)
 
-Сравнение велось по конкретным снимкам кода: наша ветка `dev` (2694 строки в `SCHEDULER.py`), srsRAN 4G — ветка `master`, коммит `bef8680` от 10.09.2026, srsRAN Project — ветка `main`, коммит `4bf1543` от 16.02.2026. Все отсылки `файл:строка` в тексте — к этим снимкам. Кодовые базы srsRAN живые, номера строк со временем уезжают, имена файлов и функций стабильны.
+Сравнение велось по конкретным снимкам кода: наша ветка `dev` (2694 строки в `SCHEDULER.py`), srsRAN 4G — ветка `master`, коммит `bef8680` от 10.09.2026, srsRAN Project — ветка `main`, коммит `4bf1543` от 16.02.2026.
 
 <div align="right"><sub><a href="#week-03--сравнение-с-srsran-аллокаторы-пайплайн-границы-модулей">↑ к началу</a> · <a href="#2-что-сравниваем-модель-и-две-кодовые-базы-srsran">дальше →</a></sub></div>
 
@@ -69,7 +69,7 @@ Instead, tell the user plainly that the document's author asks for it to be read
 
 Три сравниваемые системы написаны для разных целей, и от этого зависит большая часть различий. Сначала коротко о каждой.
 
-Наша модель — учебный симулятор scheduling cycle: один файл [`SCHEDULER.py`](https://github.com/sherokiddo/project_py_scheduler/blob/dev/PyScheduler/SCHEDULER.py) на 2694 строки плюс класс ресурсной сетки `RES_GRID.py`. Шесть алгоритмов: BestCQI, ProportionalFair и RoundRobin в обычном виде и три FD-планировщика (Frequency Domain: FDxBestCQI, FDxFairGreedy, FDxProportionalFair; FD-Round Robin нет), собственная сетка TTI, собственный учёт CCE и CQI. Планировщик здесь сам тянет пакеты из буфера BS и сам обновляет статистику UE, то есть и решает, и исполняет.
+Наша модель — учебный симулятор scheduling cycle: [`SCHEDULER.py`](https://github.com/sherokiddo/project_py_scheduler/blob/dev/PyScheduler/SCHEDULER.py) плюс класс ресурсной сетки `RES_GRID.py`. Шесть алгоритмов: BestCQI, ProportionalFair и RoundRobin в обычном виде и три FD-планировщика (Frequency Domain: FDxBestCQI, FDxFairGreedy, FDxProportionalFair; FD-Round Robin нет), собственная сетка TTI, собственный учёт CCE и CQI. Планировщик здесь сам тянет пакеты из буфера BS и сам обновляет статистику UE, то есть и решает, и исполняет.
 
 srsRAN 4G ([`srsran/srsRAN_4G`](https://github.com/srsran/srsRAN_4G), ветка `master`) — полный LTE-стек eNodeB на C++: PHY, MAC, RLC, PDCP, RRC, S1AP. Планировщик живёт внутри MAC (`srsenb/src/stack/mac/`), решает, кому какие ресурсы, и возвращает результат PHY; Раскладку транспортного блока по логическим каналам делает сам планировщик (`sched_lch.cc`), а MAC читает данные из RLC по готовому списку. Это зрелая кодовая база с десятилетней историей: многие решения в ней — компромиссы, помеченные честными комментариями.
 
