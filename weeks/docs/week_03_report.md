@@ -118,27 +118,28 @@ srsRAN Project ([`srsran/srsRAN_Project`](https://github.com/srsran/srsRAN_Proje
 Модель управления — pull: PHY-воркер, дойдя до дедлайна подкадра, сам дёргает MAC (`mac.cc:639`, `get_dl_sched`), а тот передаёт управление планировщику (`mac.cc:656`, `scheduler.dl_sched`). Сам по себе планировщик не запускается: его вызывают, когда радио готово принять решение.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "nodeSpacing": 28, "rankSpacing": 36, "padding": 12}}}%%
 flowchart TD
     A["PHY: дедлайн подкадра"] --> B["mac::get_dl_sched :639"]
     B --> C["scheduler.dl_sched :656"]
     C --> D["SIB + paging :418"]
     D --> E["RAR :421 · Msg3 :425 · PDCCH orders :428"]
-    E --> F["UL/DL чередуются по чётности TTI :432–441"]
+    E --> F["UL/DL чередуются<br/>по чётности TTI :432–441"]
     F --> G["alloc_dl_users :438"]
-    G --> H["очередь PF: dl_prio = r/R^fairness :200"]
+    G --> H["очередь PF:<br/>dl_prio = r/R^fairness :200"]
     H --> I{"есть HARQ-ретрансляция? :105"}
     I -->|да| J["try_dl_retx_alloc :106"]
-    I -->|нет| K["try_dl_newtx_alloc_greedy :113–115"]
+    I -->|нет| K["try_dl_newtx_alloc_greedy<br/>:113–115"]
     J --> L["sched_grid::alloc_dl :134"]
     K --> L
     L --> M{"коллизия rbgmask? :141"}
-    M -->|да| N["sch_collision — маска не тронута"]
-    M -->|нет| O["alloc_dci :147 — DFS по CCE :75"]
+    M -->|да| N["sch_collision<br/>маска не тронута"]
+    M -->|нет| O["alloc_dci :147<br/>DFS по CCE :75"]
     O -->|провал| P["no_cch_space :158"]
     O -->|успех| Q["dl_mask |= alloc_mask :162"]
-    Q --> R["generate_sched_results :445 — победная комбинация DCI"]
-    R --> S["sched_lch: список pdu[] :171, :267–292 · MAC читает RLC :684–686"]
-    S --> T["PHY: encode_pdcch_dl :77 · encode_pdsch :70"]
+    Q --> R["generate_sched_results :445<br/>победная комбинация DCI"]
+    R --> S["sched_lch: список pdu[]<br/>:171, :267–292 · MAC читает RLC :684–686"]
+    S --> T["PHY: encode_pdcch_dl :77<br/>encode_pdsch :70"]
 ```
 
 Порядок этапов внутри `sched_carrier.cc` жёсткий: сначала общие каналы — SIB и paging (`:418`), затем RAR (`:421`), Msg3 (`:425`) и PDCCH orders (`:428`); служебный трафик получает ресурсы раньше пользовательского, потому что от него зависит работа всей соты. UL и DL чередуются по чётности TTI (`:432–441`), и только потом доходит до данных пользователей — `alloc_dl_users` (`:438`).
@@ -160,20 +161,21 @@ flowchart TD
 Модель управления — push: DU присылает slot indication, и `cell_scheduler::run_slot` (`cell_scheduler.cpp:92`) разыгрывает весь слот целиком. Единица времени другая (слот, а не TTI), но структура похожа: сначала служебное, потом пользовательское.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "nodeSpacing": 28, "rankSpacing": 36, "padding": 12}}}%%
 flowchart TD
     A["DU: граница слота"] --> B["cell_scheduler::run_slot :92"]
     B --> C["SSB :115 · CSI :118 · SI :121"]
     C --> D["PRACH :124 · RA :127 · PG :130"]
     D --> E["ue_sched->run_slot :133"]
     E --> F["ue_scheduler_impl :94–96 → intra_slice_sched.dl_sched"]
-    F --> G["ретрансляции: pending_dl_retxs :299"]
-    G --> H["кандидаты отсортированы по priority :411–446"]
+    F --> G["ретрансляции:<br/>pending_dl_retxs :299"]
+    G --> H["кандидаты отсортированы<br/>по priority :411–446"]
     H --> I["Stage 1: PDCCH первым :468–510"]
-    I --> J["Stage 2: PRB на грант :520–537"]
+    I --> J["Stage 2: PRB на грант<br/>:520–537"]
     J --> K{"PRB нашлись?"}
-    K -->|нет| L["INVALID_RNTI :255 — грант аннулирован"]
+    K -->|нет| L["INVALID_RNTI :255<br/>грант аннулирован"]
     K -->|да| M["PDSCH PDU → DU"]
-    I -->|провал PDCCH/UCI| N["cancel_last_pdcch :199"]
+    I -->|провал PDCCH/UCI| N["cancel_last_pdcch<br/>:199"]
 ```
 
 Слот начинается с общих каналов: SSB (`:115`), CSI-RS (`:118`), SI (`:121`), PRACH (`:124`), RA (`:127`), paging (`:130`) — и только потом пользовательские данные (`ue_sched->run_slot`, `:133`). Дальше идут срезы, которых в LTE-ветке нет. Слайсы по старшинству обходит `ue_scheduler_impl.cpp` (`:94–96`), внутри среза сначала ретрансляции (`pending_dl_retxs`, `:299`), затем новые передачи; кандидаты сортируются по приоритету, который даёт политика — round-robin (`scheduler_time_rr.cpp`) или time-QoS (`scheduler_time_qos.cpp`) с PF-метрикой внутри веса.
@@ -213,27 +215,28 @@ if (vrbs.empty()) {
 ## 6. Три пайплайна рядом
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "nodeSpacing": 28, "rankSpacing": 36, "padding": 12}}}%%
 flowchart LR
     subgraph OURS["Наша модель · SCHEDULER.py"]
         direction TB
-        O0["S0–S2.5: CQI, eligibility, окно :358–370"] --> O3["S3–S4.5: приоритеты, PList, оценка PDSCH :375–403"]
+        O0["S0–S2.5: CQI, eligibility,<br/>окно :358–370"] --> O3["S3–S4.5: приоритеты, PList,<br/>оценка PDSCH :375–403"]
         O3 --> O5["S5: PDCCH — счётчик CCE :403"]
         O5 --> O6["S6: PDSCH — RBG по сетке :409"]
-        O6 --> O7["S7–S8: буферы, статистика, результат :412–429"]
+        O6 --> O7["S7–S8: буферы, статистика,<br/>результат :412–429"]
     end
     subgraph FOURG["srsRAN 4G · LTE"]
         direction TB
         F1["общие каналы: SIB, RAR :418–421"] --> F2["очередь PF :200"]
         F2 --> F3["UE: retx :105, затем newtx :113"]
-        F3 --> F4["alloc_dl: маска+DCI атомарно :134–162"]
-        F4 --> F5["LCP в sched_lch, MAC читает RLC :686"]
+        F3 --> F4["alloc_dl: маска + DCI<br/>атомарно :134–162"]
+        F4 --> F5["LCP в sched_lch,<br/>MAC читает RLC :686"]
     end
     subgraph PROJ["srsRAN Project · NR"]
         direction TB
         P1["общие каналы слота :115–133"] --> P2["слайсы + политика :94–96"]
-        P2 --> P3["Stage 1: PDCCH первым :468–510"]
-        P3 --> P4["Stage 2: PRB на грант :520–537"]
-        P4 --> P5["результат слота уходит дальше по DU"]
+        P2 --> P3["Stage 1: PDCCH первым<br/>:468–510"]
+        P3 --> P4["Stage 2: PRB на грант<br/>:520–537"]
+        P4 --> P5["результат слота<br/>уходит дальше по DU"]
     end
     OURS ~~~ FOURG ~~~ PROJ
 ```
@@ -462,8 +465,9 @@ rbgmask_t remove_min_cqi_rbgs(const rbgmask_t& rbgmask, const sched_dl_cqi& dl_c
 Логика двух ветвей разная. Wideband: TBS монотонно растёт с числом PRB, поэтому стартуют с полной свободной маски и методом ложной позиции находят минимальное число RBG, которое вмещает `req_bytes` — экономия ресурсов без потери ёмкости. Subband: монотонности больше нет — один плохой саббанд в маске тянет вниз средний CQI всего TB, — поэтому алгоритм идёт от обратного: берет максимальную маску и шагами выкидывает RBG с худшим CQI, после каждого шага пересчитывая MCS/TBS, пока ёмкость ещё покрывает запрос. Комментарий в коде прямо признаёт: оптимальность не гарантируется, есть `TODO: can be optimized`.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "nodeSpacing": 28, "rankSpacing": 36, "padding": 12}}}%%
 flowchart TD
-    A["find_available_rbgmask: полная свободная маска<br/>(для DCI 1A — только связные RBG)"] --> B["compute_mcs_and_tbs_lower_bound<br/>по полной маске"]
+    A["find_available_rbgmask:<br/>полная свободная маска<br/>DCI 1A: только связные RBG"] --> B["compute_mcs_and_tbs_lower_bound<br/>по полной маске"]
     B --> C{"subband_cqi_enabled?<br/>(K > 0)"}
     C -->|"нет · wideband"| D["TBS ∝ PRB: false position<br/>ищет минимальное число RBG"]
     C -->|"да · subband"| E["remove_min_cqi_rbgs:<br/>снять RBG с минимальным CQI"]
@@ -805,23 +809,24 @@ return int(re_per_rb_tti * modulation * code_rate)
 Последний срез сравнения: контракты между модулями. Кто кого дёргает, что передаёт и кто за что отвечает после передачи.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "nodeSpacing": 28, "rankSpacing": 36, "padding": 12}}}%%
 flowchart LR
     subgraph OURS2["Наша модель"]
-        SM["SIMULATION_MANAGER :1491"] -->|"users"| SCH["SCHEDULER :340"]
+        SM["SIMULATION_MANAGER<br/>:1491"] -->|"users"| SCH["SCHEDULER<br/>:340"]
         SCH -->|"ALLOCATE_RBG :430"| RG["RES_GRID"]
-        SCH -->|"_process_buffers :874 (вызов :938)"| BS["BS: буфер"]
-        SCH -->|"UPD_DL_THROUGHPUT_BPS :629"| UE["UE: статистика"]
+        SCH -->|"_process_buffers :874<br/>(вызов :938)"| BS["BS: буфер"]
+        SCH -->|"UPD_DL_THROUGHPUT_BPS<br/>:629"| UE["UE: статистика"]
     end
     subgraph FOURG2["srsRAN 4G"]
         PHY1["PHY cc_worker"] -->|"get_dl_sched :639"| MAC1["MAC mac.cc"]
         MAC1 -->|"dl_sched :656"| SCD1["SCHED sched_carrier"]
-        SCD1 -->|"rnti+dci+tbs :673"| MAC1
+        SCD1 -->|"rnti + dci + tbs<br/>:673"| MAC1
         MAC1 -->|"PDU :686"| PHY1
     end
     subgraph PROJ2["srsRAN Project"]
-        DU["DU"] -->|"slot indication"| CS["cell_scheduler :92"]
-        CS --> IS["intra_slice :468/:520"]
-        IS -->|"pdcch/pdsch PDU"| DU
+        DU["DU"] -->|"slot indication"| CS["cell_scheduler<br/>:92"]
+        CS --> IS["intra_slice<br/>:468 / :520"]
+        IS -->|"PDCCH / PDSCH PDU"| DU
     end
     OURS2 ~~~ FOURG2 ~~~ PROJ2
 ```
