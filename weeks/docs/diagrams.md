@@ -1,7 +1,7 @@
 # Диаграммы модуля SCHEDULER.py
 
 > Ответственный: Тимур (Scheduler) | Проверено по коду: `ae9db40` (ветка `dev`)  
-> Все схемы соответствуют коммиту `ae9db40`; поведение подтверждено чтением кода и фактическими прогонами (сценарий TTI 5 из [README §4](../README.md), pytest). Наблюдения, упомянутые на схемах (AUD-xxx), — в [audit.md](audit.md); планируемые изменения (FEAT-xxx) — в [features.md](features.md).
+> Все схемы соответствуют коммиту `ae9db40`; поведение подтверждено чтением кода и фактическими прогонами (сценарий TTI 5 из [README §4](../README.md), pytest). Наблюдения, упомянутые на схемах (BUG/OPT/DOC-SCH-xxx), — в [audit.md](audit.md); планируемые изменения (FEAT/OPT-SCH-xxx) — в [features.md](features.md).
 
 ## 1. Текущая структура (AS-IS)
 
@@ -175,7 +175,7 @@ sequenceDiagram
 flowchart TD
     A["schedule(tti, users)"] --> B["0 _refresh_cqi :498"]
     B --> C["1 _filter_eligible_ues :553"]
-    C -->|пусто| Z["_empty_result :1007<br/>(счётчики blocked/avg_priority<br/>не сбрасываются — AUD-004)"]
+    C -->|пусто| Z["_empty_result :1007<br/>(счётчики blocked/avg_priority<br/>не сбрасываются — BUG-SCH-004)"]
     C --> D["2/2.5 окно :604/:647"]
     D -->|пусто| Z
     D --> E["3 _calculate_priorities* :1142"]
@@ -194,7 +194,7 @@ flowchart TD
 
 ### 2.3. Контур обратной связи между TTI
 
-Проверен замером: заранее выставленный `average_throughput` = 1 000 000 у незапланированного UE затухает до 996 004 за один TTI — двойной нулевой шаг EWMA ([audit.md](audit.md), AUD-001).
+Проверен замером: заранее выставленный `average_throughput` = 1 000 000 у незапланированного UE затухает до 996 004 за один TTI — двойной нулевой шаг EWMA ([audit.md](audit.md), BUG-SCH-001).
 
 ```mermaid
 flowchart LR
@@ -219,7 +219,7 @@ stateDiagram-v2
     [*] --> Нет_записи : UE ещё не присылал валидный отчёт
     Нет_записи --> Created : первый валидный WB CQI 1–15<br/>_refresh_cqi :523
     Created --> Updated : новый валидный отчёт<br/>wb_cqi, last_wb_update = tti :533
-    Updated --> Updated : невалидный CQI или пустой sbb_cqi —<br/>запись НЕ затирается (AUD-002) :521
+    Updated --> Updated : невалидный CQI или пустой sbb_cqi —<br/>запись НЕ затирается (BUG-SCH-002) :521
     Updated --> Deleted : дерегистрация UE<br/>НЕ РЕАЛИЗОВАНО — только в docstring :198
     Created --> Deleted
     Deleted --> [*]
@@ -227,7 +227,7 @@ stateDiagram-v2
         _get_wb_cqi :1034 для UE без записи
         возвращает 0 — этап 1 отсеивает его,
         но этап 7 при живом буфере падает
-        ValueError (AUD-014)
+        ValueError (BUG-SCH-007)
     end note
 ```
 
@@ -239,7 +239,7 @@ stateDiagram-v2
     Свободен --> Выделен : allocate_cce(ue_id, L) успех :1466<br/>num_assigned_cce += L, cce_allocations[ue_id] = L
     Выделен --> Выделен : повторный запрос тому же UE → False :1490
     Свободен --> Свободен : бюджет исчерпан → False :1435
-    Выделен --> Утёк : PDSCH для UE не разместились —<br/>release_cce() заглушка :1538 (AUD-005)
+    Выделен --> Утёк : PDSCH для UE не разместились —<br/>release_cce() заглушка :1538 (BUG-SCH-005)
     Утёк --> Свободен : только reset_tti() следующего TTI
 ```
 
@@ -257,7 +257,7 @@ stateDiagram-v2
 
 ## 3. Целевая структура (TO-BE) — только если согласована
 
-Не согласовано, см. [features.md](features.md) (FEAT-001). Направление «разделить ранжирование пользователей и аллокацию ресурсов» следует из roadmap модуля (:2676–2694) и наблюдаемого дублирования механики аллокации в шести `_allocate_pdsch`; ниже — черновик схемы, шаги и приёмка описаны в FEAT-001.
+Не согласовано, см. [features.md](features.md) (OPT-SCH-001). Направление «разделить ранжирование пользователей и аллокацию ресурсов» следует из roadmap модуля (:2676–2694) и наблюдаемого дублирования механики аллокации в шести `_allocate_pdsch`; ниже — черновик схемы, шаги и приёмка описаны в OPT-SCH-001.
 
 ```mermaid
 classDiagram
@@ -297,11 +297,11 @@ classDiagram
     ResourceAllocator <|-- FDPerRBGAllocator
     SchedulerInterface o-- UserRanker : стратегия
     SchedulerInterface o-- ResourceAllocator : стратегия
-    SchedulerInterface *-- PDCCHManager : + рабочий release_cce (FEAT-002)
-    SchedulerInterface *-- AdaptiveModulationAndCoding : TBS-таблицы 36.213 (FEAT-003)
+    SchedulerInterface *-- PDCCHManager : + рабочий release_cce (FEAT-SCH-001)
+    SchedulerInterface *-- AdaptiveModulationAndCoding : TBS-таблицы 36.213 (FEAT-SCH-002)
 ```
 
-Что изменится относительно AS-IS: общая механика аллокации (`remaining_buffer`, вызов `ALLOCATE_RBG`, сборка индексов RB, условия прерывания), продублированная сейчас в шести `_allocate_pdsch`, уходит в иерархию `ResourceAllocator`; выбор UE — в иерархию `UserRanker`; базовый класс остаётся оркестратором этапов. Старые имена фабрики (`'BestCQI'`, `'FD_PF'`, …) сохраняются как пары (ranker, allocator) для обратной совместимости с `SchedulerConfig` (SIMULATION_MANAGER.py:871). В ту же схему без изменения оркестратора встраиваются: QoS-планировщики из открытого PR #39 (`QosAwareScheduler` — ещё один Ranker), DRL-ранжирование из ветки `feature/drl-scheduler` (PPO/DQN-ranker), венгерский бенчмарк (FEAT-005 — офлайн эталонный Allocator).
+Что изменится относительно AS-IS: общая механика аллокации (`remaining_buffer`, вызов `ALLOCATE_RBG`, сборка индексов RB, условия прерывания), продублированная сейчас в шести `_allocate_pdsch`, уходит в иерархию `ResourceAllocator`; выбор UE — в иерархию `UserRanker`; базовый класс остаётся оркестратором этапов. Старые имена фабрики (`'BestCQI'`, `'FD_PF'`, …) сохраняются как пары (ranker, allocator) для обратной совместимости с `SchedulerConfig` (SIMULATION_MANAGER.py:871). В ту же схему без изменения оркестратора встраиваются: QoS-планировщики из открытого PR #39 (`QosAwareScheduler` — ещё один Ranker), DRL-ранжирование из ветки `feature/drl-scheduler` (PPO/DQN-ranker), венгерский бенчмарк (FEAT-SCH-004 — офлайн эталонный Allocator).
 
 ## 4. Ссылки на исходники
 
