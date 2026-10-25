@@ -2,7 +2,7 @@
 
 > Ответственный: Тимур (Scheduler)  
 > Состояние: описан  
-> Проверено по коду: `6c0aae2` | Обновлено: `2026-10-18`
+> Проверено по коду: `6c0aae2` | Обновлено: `2026-10-24`
 
 Источник: [`PyScheduler/SCHEDULER.py`](https://github.com/sherokiddo/project_py_scheduler/blob/6c0aae2/PyScheduler/SCHEDULER.py), версия модуля v2.1.0 + QoS-слияние PR #39, 3245 строк. Ссылки даны в формате `файл::символ (:строка)`; номера строк действительны для коммита `6c0aae2` (HEAD ветки `dev`). Все приведённые числа и поведение проверены фактическими запусками на этом коммите; контрольный сценарий §4 воспроизводится побитово и на `ae9db40`, и на `6c0aae2`. Авторская документация модуля: [`Documentation/doc_scheduler_v2.1.0.md`](https://github.com/sherokiddo/project_py_scheduler/blob/6c0aae2/PyScheduler/Documentation/doc_scheduler_v2.1.0.md) (не обновлялась после PR #26, см. [audit.md](docs/audit.md) DOC-SCH-001).
 
@@ -95,8 +95,8 @@ print(res['allocation'])
 | `FDxBestCQIScheduler` (:2215) | на каждом RBG побеждает max SB CQI с fallback на WB (:2269, выбор :2304) | фабрика `'FD_BCQI'` |
 | `FDxFairGreedyScheduler` (:2339) | RR-ротация в TD (:2394) + per-RBG выбор по SB CQI с ограничением «один UE — один RBG за раунд» (`served_in_round` :2448–2505); до ревью PR #26 класс носил имя FD_RR | фабрика `'FD_FGS'` |
 | `FDxProportionalFairScheduler` (:2524) | WB PF задаёт порядок выдачи CCE (:2588); на каждом RBG побеждает max PF-метрики по SB CQI (:2631, цикл :2645) | фабрика `'FD_PF'` |
-| `BasicQosAwareScheduler` (:2704) | QoS (PR #39): priority = HOL delay × GBR weight × CQA-метрика (Coita или PF, `metric_mode`), per-RBG выбор по той же метрике; docstring предупреждает: один bearer на UE | фабрика `'BasicQosAware'` (:262) |
-| `QosAwareScheduler` (:2960) | QoS (PR #39): приоритет по потокам (UE, QCI): GBR — масштабное смещение + urgency от HOL delay и packet delay budget (`QCI.get_delay_budget`), per-RBG выбор потока | фабрика `'QosAware'` (:263) |
+| `BasicQosAwareScheduler` (:2704) | QoS (PR #39): ранжирование — HOL-группировка потоков + GBR-приоритет `1_000_000 + best_gbr_group` (:2764–2802); per-RBG выбор — произведение `hol_delay × gbr_weight × cqa_metric` (:2930; Coita или PF по `metric_mode`); docstring предупреждает: один bearer на UE | фабрика `'BasicQosAware'` (:262) |
+| `QosAwareScheduler` (:2960) | QoS (PR #39): приоритет по потокам (UE, QCI): GBR — масштабное смещение + urgency от HOL delay и packet delay budget (`QCI.get_delay_budget`), per-RBG выбор потока по метрике `sigmoid(hol, pdb) × pf` (:3128–3133); переопределяет `_logical_channel_multiplexing` (:3175–3222) | фабрика `'QosAware'` (:263) |
 | roadmap-комментарий (:3227–3245) | планы из самого кода: BufferManager, DCI + AllocationTracker, каноничный output, QoS, tie-break, исследование венгерского/жадного распределения RBG, оценка средней пропускной способности PF, защита голодающих UE | основа [features.md](docs/features.md) |
 
 Матрица переопределений (различия алгоритмов локальны — базовый класс реализует весь цикл):
@@ -109,8 +109,8 @@ print(res['allocation'])
 | FD_BCQI (:2215) | WB CQI (:2250) | pass-through (:2243) | per-RBG max SB CQI (:2269) | — |
 | FD_FGS (:2339) | RR-ротация (:2394) | pass-through (:2377) | per-RBG SB CQI + `served_in_round` (:2423) | `rr_*_offset` |
 | FD_PF (:2524) | WB PF (:2588) | pass-through (:2571) | per-RBG PF по SB CQI (:2631) | — |
-| BasicQosAware (:2704) | HOL×GBR×CQA (:2764) | pass-through (:2753) | per-RBG по QoS-метрике (:2806) | `metric_mode` (Coita/PF) |
-| QosAware (:2960) | per-flow GBR/urgency (:2999) | pass-through (:2988) | per-RBG выбор потока (:3044) | `allocation_flow` |
+| BasicQosAware (:2704) | HOL-группировка + GBR-приоритет (:2764–2802) | pass-through (:2753) | per-RBG произведение hol×gbr×cqa (:2930) | `metric_mode` (Coita/PF) |
+| QosAware (:2960) | per-flow GBR/urgency (:2999–3038) | pass-through (:2988) | per-RBG выбор потока (:3044, метрика :3128–3133) | `allocation_flow`, override мультиплексирования (:3175–3222) |
 
 Ключевые константы (дефолты `__init__` :294 и пороговые значения): `pcfich=2`; `max_dl_ue_tti=None` (без лимита); `window_size=100`, `enable_window=True`; `wb/sb_cqi_upd_interval=1` (каждый TTI); порог оценки PDSCH 95% `rb_per_slot` (:733); aggregation level: CQI 13–15→1, 10–12→2, 7–9→4, 1–6→8 CCE (:1416); бюджет CCE при 10 МГц: PCFICH 1/2/3 → 8/25/41 (:1347); RBG при 10 МГц: 3 RB → 17 RBG (`RES_GRID.py::RBG_SIZE_TABLE` :293); bits/RB (PCFICH=2, 1 порт): CQI 15→798, 13→755, 7→326 (:1730).
 
@@ -139,7 +139,10 @@ print(res['allocation'])
 ## 8. Связанные материалы
 
 - [Диаграммы](docs/diagrams.md) — контекст и классы (AS-IS), последовательность вызовов TTI, переходы состояний, черновик TO-BE
-- [Ревизия](docs/audit.md) — 17 наблюдений (BUG-SCH-001…010, OPT-SCH-002…006, DOC-SCH-001…002) с доказательствами, замерами и статусами; таблица сопоставления прежних ID — там же
+- [Ревизия](docs/audit.md) — 18 наблюдений (BUG-SCH-001…011, OPT-SCH-002…006, DOC-SCH-001…002) с доказательствами, замерами и статусами; таблица сопоставления прежних ID — там же
 - [План развития](docs/features.md) — карточки FEAT-SCH-001…009 (две из них — крупные архитектурные разработки: FEAT-SCH-008 с отдельной спецификацией и FEAT-SCH-009 в статусе черновика), связи с issues/PR/ветками, межмодульные зависимости
-- [Спецификация SPEC-FEAT-SCH-008](docs/specs/SPEC-FEAT-SCH-008.md) — план реализации разделения Ranker/Allocator: контракты, состояние, зависимости, проверки, недельные задачи
+- [Спецификация SPEC-FEAT-SCH-008](docs/specs/SPEC-FEAT-SCH-008.md) — план реализации разделения Ranker/Allocator (v4): контракты (включая `MultiplexingPolicy` и propose→validate→commit), правила миграции R1–R8, атомарные зелёные шаги M0–M8 (M4c/M4d, M5a/M5b, M8a–M8e), CQI-трек C0–C4, регрессионная матрица
+- [Definition of Done](docs/process/DOD-FEAT-SCH-008.md) — критерии готовности атомарного PR (SPEC §2 + практика ревью репозитория), gate шага, статус выполнения M0 с подтверждениями
+- [ROADMAP](docs/process/ROADMAP-SCH.md) — статус пунктов развития: TODO-список из кода (:3227–3245), шаги M0–M8e и CQI-трек, смежные issues, закрытые и открытые пункты
+- [CHANGELOG](docs/process/CHANGELOG-DOC-SCH-001.md) — ревизии комплекта DOC-SCH-001 (1–9) и работы FEAT-SCH-008 вне комплекта
 - [`Documentation/doc_scheduler_v2.1.0.md`](https://github.com/sherokiddo/project_py_scheduler/blob/6c0aae2/PyScheduler/Documentation/doc_scheduler_v2.1.0.md) — авторская документация модуля (PR #26, после не обновлялась)

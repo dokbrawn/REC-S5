@@ -91,15 +91,16 @@ classDiagram
     }
     class BasicQosAwareScheduler {
         +metric_mode (Coita/PF)
-        #_calculate_priorities() HOL×GBR×CQA
+        #_calculate_priorities() HOL-группировка + GBR-приоритет
         #_apply_pdsch_estimation() pass-through
-        #_allocate_pdsch() per-RBG по QoS-метрике
+        #_allocate_pdsch() per-RBG произведение hol×gbr×cqa
     }
     class QosAwareScheduler {
         +allocation_flow
         #_calculate_priorities() per-flow GBR/urgency
         #_apply_pdsch_estimation() pass-through
-        #_allocate_pdsch() per-RBG выбор потока
+        #_allocate_pdsch() per-RBG выбор потока (sigmoid hol/PDB × pf)
+        #_logical_channel_multiplexing() override QoS-мультиплексирования
     }
     class PDCCHManager {
         +total_cce
@@ -274,63 +275,101 @@ stateDiagram-v2
 
 ## 3. Целевая структура (TO-BE) — только если согласована
 
-Не согласована: ниже — черновик v2 к спецификации FEAT-SCH-008 (статус и согласование — [features.md](features.md) §1, полный текст — [specs/SPEC-FEAT-SCH-008.md](specs/SPEC-FEAT-SCH-008.md)). Спецификация v2 учла замечания ревью: состояние планирования вынесено в типизированный `SchedulerState` во владении оркестратора, вторая сортировка и top-N остаются в оркестраторе, контракт аллокатора не содержит собственного rollback (атомарность RBG уже внутри `ALLOCATE_RBG`, RES_GRID :430; опасность освобождения без проверки владельца — [BUG-SCH-009](audit.md#bug-sch-009)). Направление «разделить ранжирование пользователей и аллокацию ресурсов» следует из roadmap модуля (:3227–3245) и дублирования механики аллокации в восьми `_allocate_pdsch` (шесть прежних + два QoS-класса из PR #39).
+Не согласована: ниже — черновик v4 к спецификации FEAT-SCH-008 (статус и согласование — [features.md](features.md) §1, полный текст — [specs/SPEC-FEAT-SCH-008.md](specs/SPEC-FEAT-SCH-008.md)). Спецификация v4 учла замечания P1 архитектурного ревью v3 и уточнения границ смежных направлений: миграция — атомарными зелёными шагами (v4: M4c/M4d, M5a/M5b, M8a–M8e), в реестре до завершения переноса хранится legacy-маршрут (все старые имена работают на каждом PR); состояние планирования вынесено в типизированный `SchedulerState` во владении оркестратора (долговременные `rr_*_offset`; `served_in_round` остаётся локальной переменной FD_FGS), вторая сортировка и top-N остаются в оркестраторе; контракт аллокатора не содержит собственного rollback, и `ALLOCATE_RBG` **не объявляется гарантированно атомарной**: при частичном отказе `RELEASE_RBG` освобождает RB без проверки владельца ([BUG-SCH-009](audit.md#bug-sch-009)); результат аллокации — внутренний `AllocationResult` (per-flow бюджеты QoS доходят до мультиплексирования); переопределение мультиплексирования QoS становится явным контрактом `MultiplexingPolicy` — необязательным четвёртым элементом дескриптора пары, компонент вызывает оркестратор на этапе 7 (v4); экспериментальный путь работает по схеме propose→validate→commit с точкой запуска после этапа PDCCH (v4); политика CQI разделена на reporting/consumption с целевым контрактом `CqiEstimate`/`CqiView` и явной декларацией `channel_awareness` у алгоритмов (реализация — отдельный трек C1–C4). Направление «разделить ранжирование пользователей и аллокацию ресурсов» следует из roadmap модуля (:3227–3245) и дублирования механики аллокации в восьми `_allocate_pdsch` (шесть прежних + два QoS-класса из PR #39).
 
-Чтение схемы: без пометки — существующий элемент; **(новый)** — добавляется; **(перенос)** — логика переезжает из указанного места; **(удалено)** — убирается из контракта.
+Чтение схемы: без пометки — существующий элемент; **(новый)** — добавляется; **(перенос)** — логика переезжает из указанного места; **(удалено)** — убирается из контракта; **(временный)** — существует только на период миграции (R5/R8).
 
 ```mermaid
 flowchart TD
     subgraph NOW["AS-IS (6c0aae2)"]
         A1["SchedulerInterface :216<br/>этапы 0–8 + восемь _allocate_pdsch<br/>(:1931/:2040/:2160/:2269/:2423/:2631/:2806/:3044)"]
-        A2["rr_ue_offset / rr_rbg_offset / served_in_round<br/>— поля классов RR (:1993–1994), FD_FGS (:2374–2375, :2448)"]
+        A2["rr_ue_offset / rr_rbg_offset — поля классов RR (:1993–1994), FD_FGS (:2374–2375);<br/>served_in_round — локально в FD_FGS (:2448), остаётся локальным"]
         A3["переопределения _apply_pdsch_estimation<br/>(RR/FD/QoS — pass-through: :1996/:2243/:2377/:2571/:2753/:2988)"]
-        A4["rollback аллокатора в черновике v1<br/>(удалено из контракта v2)"]
+        A5["cqi_map (CQIMap :190–208) + _refresh_cqi :504–559 —<br/>копирование значений, не событие получения отчёта"]
+        A6["allocation_flow — побочный канал QoS (:2986, :3087, :3149)<br/>→ _logical_channel_multiplexing (:3175–3222)"]
     end
-    subgraph TOBE["TO-BE (FEAT-SCH-008 v2)"]
-        B1["SchedulerInterface<br/>оркестратор этапов 0–8;<br/>вторая сортировка и top-N остаются здесь"]
-        B2["SchedulerState (новый)<br/>dataclass: rr_ue_offset, rr_rbg_offset,<br/>served_in_round; владелец — оркестратор"]
-        B3["UserRanker (новый, interface)<br/>rank(...) → prioritized_ues;<br/>8 стратегий + QoS-пары"]
-        B4["ResourceAllocator (новый, interface)<br/>prefilter(...) — оценка PDSCH (перенос A3);<br/>allocate(...) — выдача RBG; без rollback"]
-        B5["SCHEDULER_REGISTRY (новый)<br/>имя → (ranker, allocator);<br/>расширение без правок оркестратора"]
-        B6["views-протоколы (новые)<br/>CqiView / GridView / AmcView / BuffersView —<br/>точечная инъекция вместо ctx-контейнера"]
+    subgraph TOBE["TO-BE (FEAT-SCH-008 v4)"]
+        B1["SchedulerInterface<br/>оркестратор этапов 0–8;<br/>вторая сортировка и top-N остаются здесь;<br/>общая точка проверки результата;<br/>commit экспериментального пути"]
+        B2["SchedulerState (новый)<br/>dataclass: rr_ue_offset, rr_rbg_offset;<br/>владелец — оркестратор; один писатель на поле"]
+        B3["UserRanker / scorer (новый, interface)<br/>rank(...) → prioritized_ues;<br/>целевая FD-форма — score_candidate(ue, rbg, flow?, tti)"]
+        B4["ResourceAllocator (новый, interface)<br/>prefilter(...) — оценка PDSCH (перенос A3);<br/>allocate(...) → AllocationResult; без rollback"]
+        B7["AllocationResult (новый, внутренний)<br/>ue_prbs + flow_budget_bits;<br/>LegacyAllocationAdapter — временный"]
+        B5["SCHEDULER_REGISTRY (новый)<br/>имя → legacy | пара (+мультиплексирование) | custom;<br/>legacy-маршрут — временный (R5)"]
+        B8["LegacySchedulerAdapter (временный)<br/>делегирование старым классам, без дублирования"]
+        B9["CustomSchedulingPolicy (новый, контракт)<br/>propose → validate → commit после этапа PDCCH;<br/>mock proposal-only (M8e)"]
+        B11["MultiplexingPolicy (новый)<br/>база :811 | QoS-компонент :3175–3222;<br/>вызов — оркестратор, этап 7"]
+        B6["views-протоколы (новые)<br/>CqiView / GridView / AmcView / BuffersView / StatsView —<br/>точечная инъекция вместо ctx-контейнера"]
+        B10["CQI: legacy-адаптер поверх cqi_map;<br/>целевые CqiEstimate/отчёты — трек C1–C4 (вне M-шагов)"]
     end
     A1 -->|"перенос: восемь _calculate_priorities"| B3
     A1 -->|"перенос: общая механика аллокации"| B4
-    A2 -->|"перенос: состояние — одному владельцу"| B2
+    A1 -.->|"до переноса — legacy-маршрут по одному имени"| B8
+    A2 -->|"перенос offsets — одному владельцу"| B2
     A3 -->|"перенос: стратегия оценки"| B4
-    A4 -.->|"удалено"| B4
+    A5 -->|"чтение через адаптер (без изменения семантики)"| B10
+    A6 -->|"перенос: явное поле результата"| B7
+    A6 -->|"перенос override :3175-3222"| B11
     B1 --> B2
-    B1 --> B3
-    B1 --> B4
     B1 --> B5
+    B5 -->|"pair"| B3
+    B5 -->|"legacy"| B8
+    B5 -->|"custom"| B9
+    B3 --> B4
+    B4 -->|"AllocationResult"| B1
+    B4 -->|"flow_budget_bits"| B11
+    B11 -->|"SchedulingGrant"| B1
+    B9 -->|"AllocationProposal"| B1
     B3 --> B6
     B4 --> B6
-    B4 -->|"пишет state (rr_*, served_in_round);<br/>сетку меняет только через GridView.ALLOCATE_RBG"| B2
+    B9 --> B6
+    B10 --> B6
+    B4 -->|"пишет state (rr_*_offset);<br/>сетку меняет только через GridView.allocate_rbg"| B2
 ```
 
 ```mermaid
 classDiagram
     class SchedulerInterface {
-        +create(config) фабрика пар через SCHEDULER_REGISTRY
-        +schedule(tti, users) Dict
+        +create(config) фабрика через SCHEDULER_REGISTRY (legacy | pair | custom)
+        +schedule(tti, users) Dict — внешняя форма неизменна
         -state: SchedulerState
         -ranker: UserRanker
         -allocator: ResourceAllocator
+        -multiplexing: MultiplexingPolicy (компонент QoS-пары, опционально)
         #_form_priority_list() сортировка+tie-break+top-N (остаётся)
+        #validate_result() общая точка проверки результата
+        #commit_plan() фаза commit экспериментального пути (v4)
     }
     class SchedulerState {
         +rr_ue_offset: int
         +rr_rbg_offset: int
-        +served_in_round: set
     }
     class UserRanker {
         <<interface>>
         +rank(windowed_ues, views, state) prioritized_ues
+        +score_candidate(ue, rbg, flow?, tti) целевая FD-форма
     }
     class ResourceAllocator {
         <<interface>>
         +prefilter(priority_list, views) List
-        +allocate(tti, ues_with_pdcch, views, state) Dict
+        +allocate(tti, ues_with_pdcch, views, state) AllocationResult
+    }
+    class AllocationResult {
+        <<value object>>
+        +ue_prbs dict
+        +flow_budget_bits dict or None
+    }
+    class CustomSchedulingPolicy {
+        <<interface>>
+        +propose(tti, eligible_ues, ues_with_pdcch, views, state) AllocationProposal
+    }
+    class MultiplexingPolicy {
+        <<interface>>
+        +multiplex(tti, ue, tb_bytes, buffer_statuses, flow_budgets, views) SchedulingGrant
+    }
+    class AllocationProposal {
+        <<value object>>
+        +ue_prbs dict
+        +flow_budget_bits dict or None
     }
     class BestCQIRanker
     class ProportionalFairRanker
@@ -348,12 +387,16 @@ classDiagram
     ResourceAllocator <|-- RRCyclicAllocator
     ResourceAllocator <|-- FDPerRBGAllocator
     ResourceAllocator <|-- QosPerRBGAllocator
+    ResourceAllocator ..> AllocationResult : возвращает
+    CustomSchedulingPolicy ..> AllocationProposal : план до commit
     SchedulerInterface o-- SchedulerState : владеет
-    SchedulerInterface o-- UserRanker : стратегия
-    SchedulerInterface o-- ResourceAllocator : стратегия
+    SchedulerInterface o-- UserRanker : стратегия (путь pair)
+    SchedulerInterface o-- ResourceAllocator : стратегия (путь pair)
+    SchedulerInterface o-- MultiplexingPolicy : компонент QoS-пары, этап 7
+    SchedulerInterface o-- CustomSchedulingPolicy : экспериментальный путь
 ```
 
-Что изменится относительно AS-IS: общая механика аллокации (`remaining_buffer`, вызов `ALLOCATE_RBG`, сборка индексов RB, условия прерывания), продублированная сейчас в восьми `_allocate_pdsch`, уходит в иерархию `ResourceAllocator`; первоначальный порядок UE — в иерархию `UserRanker`, при этом ranker возвращает `prioritized_ues` как сейчас, а вторая сортировка, tie-break и top-N остаются в `_form_priority_list` (:684) — поведение отбора не меняется; RR/FD-состояние (`rr_*_offset`, `served_in_round`) собирается в `SchedulerState` с правилом «один писатель на поле»; переопределения оценки PDSCH становятся методом `prefilter` стратегии аллокатора. Старые имена фабрики (`'BestCQI'`, `'FD_PF'`, `'QosAware'`, …) сохраняются как пары (ranker, allocator) через реестр — обратная совместимость с `SchedulerConfig` (SIMULATION_MANAGER.py:1030); совместимость фабрики с ядром подтверждается при интеграции, переписывания Simulation Manager не требуется. В ту же схему без изменения оркестратора встраиваются: DRL-ранжирование из ветки `feature/drl-scheduler` (PPO/DQN-ranker) и венгерский бенчмарк ([FEAT-SCH-004](features.md#feat-sch-004) — офлайн эталонный Allocator). Контракт без собственного rollback не отменяет [FEAT-SCH-001](features.md#feat-sch-001): откат CCE при провале PDSCH остаётся задачей оркестратора/менеджера контроля в точке отказа аллокатора.
+Что изменится относительно AS-IS: общая механика аллокации (`remaining_buffer`, вызов `ALLOCATE_RBG`, сборка индексов RB, условия прерывания), продублированная сейчас в восьми `_allocate_pdsch`, уходит в иерархию `ResourceAllocator`; первоначальный порядок UE — в иерархию `UserRanker`, при этом ranker возвращает `prioritized_ues` как сейчас, а вторая сортировка, tie-break и top-N остаются в `_form_priority_list` (:684) — поведение отбора не меняется; долговременные RR-смещения (`rr_*_offset`) собираются в `SchedulerState` с правилом «один писатель на поле», `served_in_round` остаётся локальной переменной FD_FGS; переопределения оценки PDSCH становятся методом `prefilter` стратегии аллокатора (до M3 стратегии подключаются без реестра); per-flow решения QoS (`allocation_flow` :3087/:3149) переносятся в явное поле `AllocationResult.flow_budget_bits` и доходят до мультиплексирования без побочного канала, а само QoS-переопределение `_logical_channel_multiplexing` (:3175–3222) становится компонентом `MultiplexingPolicy` — необязательным четвёртым элементом дескриптора пары: оркестратор вызывает компонент из дескриптора на этапе 7 вместо `self._logical_channel_multiplexing`, внешняя форма грантов не меняется (M7b); дальнейшая эволюция QoS-мультиплексирования — карточки QoS-направления. Старые имена фабрики (`'BestCQI'`, `'FD_PF'`, `'QosAware'`, …) сохраняются через реестр с тремя видами маршрутов: `legacy` (делегирование старым классам — до переноса имени), `pair` (ranker+allocator плюс необязательный компонент мультиплексирования) и `custom` (целостная экспериментальная policy по схеме propose→validate→commit: точка запуска после этапа PDCCH, план на снимке свободных ресурсов, проверка до изменений, commit только оркестратором) — обратная совместимость с `SchedulerConfig` (SIMULATION_MANAGER.py:1044); совместимость фабрики с ядром подтверждается при интеграции, переписывания Simulation Manager не требуется. Перенос выполняется по одному алгоритму за PR (план M0–M8, v4: M4c/M4d, M5a/M5b, M8a–M8e, [specs/SPEC-FEAT-SCH-008.md](specs/SPEC-FEAT-SCH-008.md) §8) — на любом промежуточном шаге все восемь имён остаются рабочими; mock custom policy в M8e — proposal-only до реализации propose→validate→commit; синхронизация `available_algorithms()` (M8a) меняет наблюдаемый результат метода и сливается после отдельного согласования (R2). В ту же схему без изменения оркестратора встраиваются: DRL-ранжирование из ветки `feature/drl-scheduler` (PPO/DQN-ranker — как pair, либо как `CustomSchedulingPolicy`, если разложение на две стратегии искусственно) и венгерский бенчмарк ([FEAT-SCH-004](features.md#feat-sch-004) — офлайн эталонный Allocator; batch-путь `GridView.snapshot_free()/commit(plan)` — точка расширения, реализуемая после [BUG-SCH-009](audit.md#bug-sch-009)). Доступ к CQI стратегии получают через `CqiView`: на период миграции — legacy-адаптер поверх `cqi_map` с прежней семантикой WB/SB и fallback (поведение `6c0aae2` сохраняется), целевой контракт `CqiEstimate` с метками `measurement_tti`/`received_tti` и независимые политики reporting/consumption внедряются отдельным CQI-треком C1–C4; каждый алгоритм явно декларирует потребляемый набор CSI (`channel_awareness`), автоматического переключения режимов нет. Контракт без собственного rollback не отменяет [FEAT-SCH-001](features.md#feat-sch-001): откат CCE при провале PDSCH остаётся задачей оркестратора/менеджера контроля в точке отказа аллокатора.
 
 ## 4. Ссылки на исходники
 
