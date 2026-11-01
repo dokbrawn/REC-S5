@@ -1,10 +1,10 @@
 # SCHEDULER.py — планировщик радиоресурсов (LTE DL)
 
 > Ответственный: Тимур (Scheduler)  
-> Состояние: описан  
-> Проверено по коду: `6c0aae2` | Обновлено: `2026-10-24`
+> Состояние: описан; шаги M0–M1 [FEAT-SCH-008](docs/features.md#feat-sch-008) выполнены в локальных ветках (поставка патчами — §4.6), следующий шаг M1a приостановлен  
+> Проверено по коду: `6c0aae2` (ветка `dev`, AS-IS) и `4658327` (ветка `feat/SCH-008-M1-protocols`, шаги M0–M1) | Обновлено: `2026-11-01`
 
-Источник: [`PyScheduler/SCHEDULER.py`](https://github.com/sherokiddo/project_py_scheduler/blob/6c0aae2/PyScheduler/SCHEDULER.py), версия модуля v2.1.0 + QoS-слияние PR #39, 3245 строк. Ссылки даны в формате `файл::символ (:строка)`; номера строк действительны для коммита `6c0aae2` (HEAD ветки `dev`). Все приведённые числа и поведение проверены фактическими запусками на этом коммите; контрольный сценарий §4 воспроизводится побитово и на `ae9db40`, и на `6c0aae2`. Авторская документация модуля: [`Documentation/doc_scheduler_v2.1.0.md`](https://github.com/sherokiddo/project_py_scheduler/blob/6c0aae2/PyScheduler/Documentation/doc_scheduler_v2.1.0.md) (не обновлялась после PR #26, см. [audit.md](docs/audit.md) DOC-SCH-001).
+Источник: [`PyScheduler/SCHEDULER.py`](https://github.com/sherokiddo/project_py_scheduler/blob/6c0aae2/PyScheduler/SCHEDULER.py), версия модуля v2.1.0 + QoS-слияние PR #39, 3245 строк. Ссылки даны в формате `файл::символ (:строка)`; номера строк действительны для коммита `6c0aae2` (HEAD ветки `dev`). Все приведённые числа и поведение проверены фактическими запусками на этом коммите; контрольный сценарий §4 воспроизводится побитово и на `ae9db40`, и на `6c0aae2`. Авторская документация модуля: [`Documentation/doc_scheduler_v2.1.0.md`](https://github.com/sherokiddo/project_py_scheduler/blob/6c0aae2/PyScheduler/Documentation/doc_scheduler_v2.1.0.md) (не обновлялась после PR #26, см. [audit.md](docs/audit.md) DOC-SCH-001). Якоря `:NNN` для строк ≤ 3245 действительны и в ветке FEAT-SCH-008: раздел шага M1 (:3246–3584) добавлен в конец файла, сдвига номеров нет (§4.7); строки > 3245 существуют только в ветке и сверены с коммитом `4658327`.
 
 ## 1. Назначение
 
@@ -48,7 +48,11 @@
 
 ## 4. Как проверить работу
 
-**Минимальный сценарий** (проверен на `6c0aae2`, воспроизводится побитово и на `ae9db40`; сохранить как `PyScheduler/_check.py` и запустить `python3 _check.py` из каталога `PyScheduler/`, нужен numpy):
+Разделы 4.1–4.2 — проверка AS-IS на `dev@6c0aae2`; разделы 4.3–4.7 — работа локальных веток FEAT-SCH-008 (шаги M0–M1: baseline-харнес, контрактный набор, фактические числа прогонов, поставка патчами, перепривязка якорей).
+
+### 4.1 Минимальный сценарий AS-IS
+
+Проверен на `6c0aae2`, воспроизводится побитово и на `ae9db40`; сохранить как `PyScheduler/_check.py` и запустить `python3 _check.py` из каталога `PyScheduler/`, нужен numpy):
 
 ```python
 import GLOBALS
@@ -78,7 +82,168 @@ print(res['allocation'])
 
 Ожидаемый результат (фактический прогон): `allocation = {1: [6..17], 2: [], 3: [0..5]}` — 18 RB из 50 (PRB util 36%); `pdcch_ue_cce_allocations = {3: 1, 1: 1}` (2/25 CCE); UE2 отсечён оценкой PDSCH (порог 95%) и не тратит CCE; извлечено 8004/2404 бита у UE1/UE3; `average_throughput` = 16008/4808 бит/с (EWMA α=0.002).
 
-**Тесты:** `PyScheduler/tests/scheduler_tests/` — 27 тестовых функций (`test_scheduler_common.py`, `test_fd_best_cqi.py`, `test_fd_proportional_fair.py`, `test_fd_round_robin.py`) и бенчмарк `FD_benchmark.py`. Запуск — из каталога `PyScheduler/`: `python3 -m pytest tests/scheduler_tests/ -q` (из корня репозитория импорт `SCHEDULER` не разрешается: тесты добавляют в `sys.path` только каталог `tests/`, а модули проекта разрешаются через cwd). **Внимание: на `dev` набор сейчас неработоспособен** — отсутствует импортируемый всеми файлами модуль `log_utils` (есть только в ветках `multithread`/`feature/AMC`). Проверено на свежих чистых клонах `ae9db40` и `6c0aae2` — картина одинаковая: (A) как есть — 4 ошибки сборки независимо от каталога запуска; (B) после возврата `log_utils.py` — 15 failed / 12 passed (14 — устаревшее имя `'FD_RR'`, 1 — содержательный инвариант FD_PF); (C) после замены `'FD_RR'`→`'FD_FGS'` — 26 passed / 1 failed. Подробности: [BUG-SCH-008](docs/audit.md#bug-sch-008); восстановление набора — запрос к владельцу репозитория и автору тестового набора в [features.md](docs/features.md) §2 (в объём работ по модулю не входит).
+### 4.2 Штатный тестовый набор репозитория
+
+`PyScheduler/tests/scheduler_tests/` — 27 тестовых функций (`test_scheduler_common.py`, `test_fd_best_cqi.py`, `test_fd_proportional_fair.py`, `test_fd_round_robin.py`) и бенчмарк `FD_benchmark.py`. Запуск — из каталога `PyScheduler/`: `python3 -m pytest tests/scheduler_tests/ -q` (из корня репозитория импорт `SCHEDULER` не разрешается: тесты добавляют в `sys.path` только каталог `tests/`, а модули проекта разрешаются через cwd). **Внимание: на `dev` набор сейчас неработоспособен** — отсутствует импортируемый всеми файлами модуль `log_utils` (есть только в ветках `multithread`/`feature/AMC`). Проверено на свежих чистых клонах `ae9db40` и `6c0aae2` — картина одинаковая: (A) как есть — 4 ошибки сборки независимо от каталога запуска; (B) после возврата `log_utils.py` — 15 failed / 12 passed (14 — устаревшее имя `'FD_RR'`, 1 — содержательный инвариант FD_PF); (C) после замены `'FD_RR'`→`'FD_FGS'` — 26 passed / 1 failed. Подробности: [BUG-SCH-008](docs/audit.md#bug-sch-008); восстановление набора — запрос к владельцу репозитория и автору тестового набора в [features.md](docs/features.md) §2 (в объём работ по модулю не входит).
+
+### 4.3 Baseline-харнес FEAT-SCH-008 (шаг M0): окружение, команды, снимки
+
+Харнес существует в локальных ветках [FEAT-SCH-008](docs/features.md#feat-sch-008) (`feat/SCH-008-M0-baseline`, далее `feat/SCH-008-M1-protocols`) и в `dev` не слит; поставка — патчами (§4.6). Каталог `PyScheduler/tests/baseline/` автономен: `conftest.py` сам добавляет `PyScheduler/` в `sys.path` (приём `layered_buffer_tests/conftest.py`) и регистрирует маркер `sim` через `pytest_configure`; файлы корня репозитория и `PYTHONPATH` не требуются.
+
+**Окружение.** Валидировано: Python 3.11.2, numpy 2.4.6, pytest 9.2.0. Снимки воспроизведены байт-в-байт на двух стендах с этими версиями, но побитовая воспроизводимость гарантируется только в рамках одной версии интерпретатора и numpy (другая BLAS способна сдвинуть float за пределы допуска 1e-9). Подпись окружения пишется в `meta.env` каждого снимка и в сравнении не участвует (§4.3, правила сравнения). Зависимости: `numpy`, `pytest`, `tqdm`, `matplotlib`, `psutil` (`statsmodels` в прогонах не используется).
+
+**Команды** (все — из корня репозитория):
+
+```bash
+# Быстрый characterization-набор (44 теста, <1 c) — обязателен после каждого шага:
+python -m pytest PyScheduler/tests/baseline -q -m "not sim"
+
+# Полный baseline-набор вместе с full-SIM контрольными точками (49 тестов, ~9 c):
+python -m pytest PyScheduler/tests/baseline -q
+
+# Регенерация всех снимков (после слияния PR, gate SPEC §8.1):
+python PyScheduler/tests/baseline/generate_baselines.py
+# одного сценария:
+python PyScheduler/tests/baseline/generate_baselines.py golden_tti5
+
+# Full-SIM контрольная точка вручную:
+python PyScheduler/tests/baseline/sim_checkpoint.py --duration 1000 \
+    --out PyScheduler/tests/baseline/baselines/sim1000_qosaware.json
+
+# Существующие наборы репозитория (своего conftest с sys.path нет — запуск из PyScheduler/):
+cd PyScheduler && python -m pytest tests/scheduler_tests -q && cd -        # BUG-SCH-008: на dev не собирается
+cd PyScheduler && python -m pytest tests/mobility_module_tests -q && cd -  # из корня — 5 ошибок коллекции
+```
+
+**Состав снимков (`baselines/`, 27 файлов: 23 сценарных + 4 full-SIM).**
+
+| Снимок | Сценарий | Раздел SPEC |
+|---|---|---|
+| `golden_tti5.json` | золотой сценарий TTI 5 (BestCQI) — числа §4.1 | 9.1 |
+| `wb_<alg>.json` (8) | WB-матрица: восемь алгоритмов, TTI 5–7 | 9, матрица покрытия |
+| `fd_sb_full_<alg>.json` (3) | контрастные SB CQI, таблица per-RBG выборов | 9.2 |
+| `fd_sb_missing_<alg>.json` (3) | пустой SB → fallback WB | 9.2 |
+| `fd_sb_partial_<alg>.json` (3) | короткий список SB + нули внутри | 9.2 |
+| `rr_multitti.json` | ротация `rr_*_offset`, TTI 5–8 | 9.3 |
+| `qos_basic_single_bearer.json` | BasicQosAware: один bearer/UE, grants + per-QCI | 9.4 |
+| `qos_aware_multiflow.json` | QosAware: потоки (ue, qci), `allocation_flow` | 9.4 |
+| `conflict_rbg_contended.json` | спор двух UE за RBG (AS-IS, без повторной выдачи) | 9.5 |
+| `conflict_pdcch_limited.json` | `max_dl_cce_allowance=1`, второй UE заблокирован | 9.5 |
+| `sim100/500/1000_qosaware.json`, `sim1000_bestcqi.json` | full-SIM, seed 42, профиль `sim_with_manager_qos` (TEST_MODULES.py :234), verbose-лог и StatsManager отключены | 9.6, 8.2 |
+
+Каждый снимок несёт `meta`: `dev_revision` (`6c0aae2`), `seed` (null для детерминированных сценариев — ГСЧ не используется), конфигурацию (bandwidth, num_frames, профили UE/потоков, kwargs планировщика), список TTI и `meta.env`.
+
+**Что фиксирует снимок (наблюдаемое состояние после каждого TTI, схема 2):** `allocation`, `pdcch_stats` (включая `pdcch_ue_cce_allocations`), `bitmap`, `last_ue_transmitted_bits`, `priority_list` (порядок + метрики), владельцы RB в сетке по слотам (`grid_rb_owners`), таблица per-RBG выборов (`rbg_choice_table`), состояние UE (`average_throughput`, `current_dl_throughput`), `cqi_map` (WB+SB), контракт словаря `user` (`user_dict_keys` + два поля, которые алгоритмы пишут поверх этапа 1: `bs_buffer_size`, `instant_rate`), `buffer_status` (per-QCI: размер, lcid, qci, hol_delay), `qci_tracker` (current/average throughput per QCI), `scheduler_extra` (`rr_*_offset`, `allocation_flow`, параметры QoS). Зачем схема расширена и как доказано отсутствие изменения поведения — [SPEC §8.2](docs/specs/SPEC-FEAT-SCH-008.md).
+
+**Правила сравнения** ([SPEC §8.2](docs/specs/SPEC-FEAT-SCH-008.md)): дискретные значения (списки PRB/RBG, UE, QCI/LCID, CCE, offsets, байты/биты) — **точно**; float — относительный допуск `1e-9` (`baseline_compare.FLOAT_REL_TOL`), широкий epsilon запрещён (R2); `sch_total_time_us` и прочие wall-clock показатели в снимки не входят; `meta.env` — информационное поле, исключено из сравнения (`baseline_harness.assert_matches_baseline` отфильтровывает ключ `env`), чтобы снимок проверялся на машине, отличной от той, на которой построен; full-SIM — sha256 полной истории allocation побитово, агрегаты по тем же правилам.
+
+**Порядок обновления снимков (gate SPEC §8.1):** PR слит → обновить локальную `dev` → `generate_baselines.py` (все сценарии) → full-SIM точки (§4.3, команды) → в каждом снимке обновить `meta.dev_revision` → `pytest PyScheduler/tests/baseline -q` зелёный → коммит регенерации отдельным коммитом/PR с пометкой «baseline refresh после слияния <PR>». Если тест падает **до** слияния — миграцию остановить: дефект исправляется в текущей поставке или откатывается. Расширение схемы снимка — частный случай с дополнительным требованием доказать побайтовое совпадение прежних полей (порядок из пяти пунктов — [SPEC §8.2](docs/specs/SPEC-FEAT-SCH-008.md)).
+
+**Состав каталога.**
+
+```
+tests/baseline/
+├── baseline_scenarios.py      — детерминированные сценарии + сбор снимков (capture_tti)
+├── baseline_compare.py        — правила сравнения (SPEC §8.2)
+├── generate_baselines.py      — генератор снимков (CLI)
+├── sim_checkpoint.py          — full-SIM контрольные точки (CLI)
+├── baseline_harness.py        — хелперы сравнения снимков (load/assert)
+├── conftest.py                — sys.path + регистрация маркера `sim`
+├── test_golden_tti5.py        — золотой сценарий (SPEC §9.1)
+├── test_matrix.py             — WB/FD-матрица (SPEC §9, 9.2)
+├── test_rr_multitti.py        — RR-ротация (SPEC §9.3)
+├── test_qos.py                — QoS grants + per-QCI (SPEC §9.4)
+├── test_conflict.py           — сеточный конфликт (SPEC §9.5)
+├── test_sim_checkpoints.py    — full-SIM точки (SPEC §9.6), маркер `sim`
+└── baselines/                 — 27 снимков (23 сценарных + 4 full-SIM)
+```
+
+**Ограничения харнеса и известные отклонения AS-IS** (зафиксированы, не исправляются — R2):
+
+1. Глобальные кэши канала (`CHANNEL_MODEL.py` :158–160) не сбрасываются между прогонами в одном процессе — `sim_checkpoint.py` очищает их перед каждым прогоном; карточка [BUG-SCH-011](docs/audit.md#bug-sch-011), запрос владельцу модели канала ([features.md §2](docs/features.md)).
+2. QoS-алгоритмы падают на `SimpleBufferManager` — WB-ячейки матрицы для BasicQosAware/QosAware строятся на `LayeredBufferManager`; карточка [BUG-SCH-012](docs/audit.md#bug-sch-012) с готовым текстом запроса владельцу BS_MODULE.
+3. `GET_TTI_STATUS` неприменим (RES_GRID.py :518 вызывает `GET_RB(tti, freq_idx)` при сигнатуре `GET_RB(tti, slot_id, freq_idx)`) — снимок сетки строится напрямую из `rb_map`.
+4. `start_simulation()` выполняется только при `enable_verbose_log(to_file=True)` (SIMULATION_MANAGER.py :1331 — тело внутри `if self._to_file:`) — `sim_checkpoint.py` включает его и пишет `output.txt` во временный каталог.
+5. `layered_buffer_tests`: 14 passed / 1 failed (`test_pdcp_discard_timer::test_packet_discard`) — существующее падение на `6c0aae2`, объект вне модуля SCHEDULER.
+6. CQI=0 через `schedule()` недостижим (фильтр :592 + `continue` :919) — кейс покрывается юнит-тестами стратегий в M1+ ([BUG-SCH-007](docs/audit.md#bug-sch-007)).
+7. `scheduler_tests` на чистом `dev` не собираются (4 ошибки коллекции) — [BUG-SCH-008](docs/audit.md#bug-sch-008); локальная верификация прогоняла набор, восстановленный по разделу «Как проверить» карточки: 26 passed + 1 xfailed. Восстановления в патчи не входят (правки чужого набора — по согласованию с владельцем репозитория).
+8. `mobility_module_tests` недетерминирован **как набор**: `RandomWaypointModel` разыгрывает destination из глобального нефиксируемого `np.random` (MOBILITY_MODEL.py :305–306), поэтому от прогона к прогону падает 0–1 тест из разных мест набора (наблюдено на трёх полных прогонах одного стенда; изолированно каждый тест проходит). Практический вывод: стабильное падение полного прогона одно — `layered_buffer_tests::test_packet_discard`, а `mobility_module_tests` даёт плавающее второе падение, и это не дефект baseline. Зона MOBILITY_MODEL, пересекается с RNG-направлением (PR #38 открыт, PR #37 с тем же содержимым закрыт без слияния).
+9. Связность харнеса full-SIM с публичным API оркестратора: `sim_checkpoint._Recorder` подменяет `SchedulerInterface.schedule` на уровне класса — планировщик создаётся внутри `start_simulation()` (SIMULATION_MANAGER.py :1357), и до экземпляра снаружи не добраться. Решение осознанное: перехватывается единственный публичный вход модуля, runtime не меняется. Следствие: если на шагах M1+ сигнатура `schedule()` или способ создания планировщика изменятся, харнес обновляется в той же поставке (R4); регенерация снимков при сохранении поведения не нужна.
+
+### 4.4 Контрактный набор M1 (`tests/scheduler_arch_tests/`)
+
+```bash
+python -m pytest PyScheduler/tests/scheduler_arch_tests -q                 # 55 passed, <1 c
+# оба каталога собираются вместе в любом порядке (из PyScheduler/):
+cd PyScheduler && python -m pytest tests/baseline tests/scheduler_arch_tests -q      # 104 passed
+cd PyScheduler && python -m pytest tests/scheduler_arch_tests tests/baseline -q      # 104 passed
+```
+
+Состав: `arch_support.py` (построители контекстов на хелперах `baseline_scenarios`), `conftest.py` (`sys.path` + фикстуры `wb_ctx`/`fd_ctx`/`layered_ctx`), `test_views_m1.py` (55 контрактных тестов: структурность протоколов, паритет сигнатур, делегирование адаптеров, сохранность якорей и шапки модуля, побочные эффекты инвентаризации). Что именно проверяется и как подтверждено мутациями — [SPEC §4.4](docs/specs/SPEC-FEAT-SCH-008.md) и [SPEC §8.3](docs/specs/SPEC-FEAT-SCH-008.md); инвентаризация входов восьми алгоритмов — [SPEC §4.2](docs/specs/SPEC-FEAT-SCH-008.md).
+
+Общие хелперы обоих каталогов лежат в модулях с уникальными именами (`baseline_harness.py`, `arch_support.py`), а не в `conftest.py`, и тесты не используют `from conftest import ...`: имя модуля `conftest` в дереве `PyScheduler/tests/` не уникально, и при сборке двух каталогов одним запуском импорт разрешается в чужой файл (`ImportError` → падение коллекции) — [BUG-SCH-013](docs/audit.md#bug-sch-013), правка `1556d48`.
+
+`ruff` запускается **из корня репозитория** (`ruff check --config .ruff.toml …`): в конфиге не задан `src`, поэтому классификация first-party зависит от каталога запуска, а вместе с ней — требование к порядку импортов (I001). Замеры и готовый текст запроса владельцу репозитория — [CFG-SCH-001](docs/audit.md#cfg-sch-001).
+
+### 4.5 Фактические числа прогонов (2026-11-01)
+
+Окружение: python 3.11.2, numpy 2.4.6, pytest 9.2.0, ruff 0.17.3. Проверено дважды: на ветке `feat/SCH-008-M1-protocols` (`4658327`) и на свежем клоне `dev@6c0aae2` с применёнными пятью патчами (§4.6) — результаты совпадают, дерево побайтово идентично.
+
+```bash
+python -m pytest PyScheduler/tests/baseline -q -m "not sim"                 # 44 passed, 5 deselected
+python -m pytest PyScheduler/tests/baseline -q                              # 49 passed (~9 c)
+python -m pytest PyScheduler/tests/scheduler_arch_tests -q                  # 55 passed (<1 c)
+cd PyScheduler && python -m pytest tests/baseline tests/scheduler_arch_tests -q   # 104 passed
+cd PyScheduler && python -m pytest tests -q --ignore=tests/scheduler_tests  # 264 passed, 1 failed, 473 subtests
+ruff check --config .ruff.toml PyScheduler/tests/baseline PyScheduler/tests/scheduler_arch_tests  # All checks passed
+# Замечания ruff считаются по строкам вывода, содержащим '.py:' — concise-вывод добавляет итоговые строки
+# ('Found N errors.', '[*] N fixable…'), поэтому 'grep -c .' даёт N+2 и для сравнения не годится:
+ruff check --config .ruff.toml --output-format concise PyScheduler/SCHEDULER.py | grep -c '\.py:'  # 60 (= dev, 0 новых)
+ruff check --config .ruff.toml --output-format concise PyScheduler | grep -c '\.py:'               # 1095 (= dev)
+ruff check --config .ruff.toml --output-format concise PyScheduler/SCHEDULER.py | awk -F: '$2>3245' | wc -l   # 0 (раздел M1 чист)
+python PyScheduler/tests/baseline/generate_baselines.py                     # повторно: файлы не меняются
+```
+
+- Единственное падение полного прогона — `tests/layered_buffer_tests/test_pdcp_discard_timer.py::test_packet_discard`, существует на `dev@6c0aae2` (до патчей типичный результат 160 passed / 1 failed). Полный прогон на ветке повторён трижды подряд — 264 passed / 1 failed каждый раз. На `dev` изредка даёт 159 passed / 2 failed: вторым падает `mobility_module_tests/test_mobility_module_spcf.py::TestGaussMarkovSpecific::test_boundary_threshold_activates_near_y_max`, который в изолированном запуске проходит стабильно (5/5) — недетерминированность чужого набора, описана в §4.3; к модулю Scheduler отношения не имеет.
+- `tests/scheduler_tests/` не собирается ни до, ни после патчей: `ModuleNotFoundError: log_utils` (4 ошибки коллекции) — [BUG-SCH-008](docs/audit.md#bug-sch-008), зона владельца репозитория.
+- В `SCHEDULER.py` 60 замечаний ruff — столько же, сколько на `dev` (60/60), во всём `PyScheduler/` — 1095 на `dev` и 1095 на ветке; в строках >3245 (раздел M1) — 0. Запуск — из корня репозитория; счёт — по строкам с `.py:` (см. команду выше).
+- Детерминизм снимков: две регенерации подряд байт-в-байт идентичны, md5 набора из 27 снимков `313565fb71b291ea695daf1920a53317` совпадает на ветке и на чистом клоне с патчами.
+- Мутационный контроль: 13/13 преднамеренных мутаций пойманы своими тестами (перечень — [SPEC §8.3](docs/specs/SPEC-FEAT-SCH-008.md)).
+- Докстринги и длина строк (AST- и построчный контроль): 0 узлов без докстринга из 128 в новых каталогах и из 56 в разделе M1 `SCHEDULER.py`; 0 строк длиннее 100 символов ([REV-SCH-001](docs/audit.md#rev-sch-001)).
+
+### 4.6 Поставка патчами: состав, порядок применения, md5
+
+Push-доступа к форку нет (`could not read Username for 'https://github.com'`), поэтому результаты шагов передаются патчами; PR не подаются по решению ответственного от 2026-11-01. Патчи получены `git diff` между коммитами локальных веток и применяются на чистое дерево `dev@6c0aae2`. Топология веток: `dev@6c0aae2` → `25555b4` (M0) → `1556d48` (инфраструктурная правка) → `6e1b019` (M1) → `c125903` (выравнивание по практикам кодревью апстрима + схема снимков 2) → `4658327` (перенос рабочих файлов поставки в комплект документации модуля).
+
+| # | Файл патча | Строк | Файлов | md5 | Коммит | Содержание |
+|---|---|---|---|---|---|---|
+| 1 | `SCH-008-M0.patch` | 2911 | 39 | `eb7a8b8156f5137c38523e31e1c4be45` | `25555b4` | шаг M0: baseline-харнес — всё в `PyScheduler/tests/baseline/` (+2650 строк: characterization-тесты, 27 снимков с `meta.dev_revision=6c0aae2` и `meta.env`) |
+| 2 | `SCH-008-fix-test-imports.patch` | 256 | 9 | `2baec380f56802fee320aea039758d37` | `1556d48` | инфраструктура: хелперы снимков вынесены из `conftest.py` в `baseline_harness.py` (+87/−47) — иначе два тестовых каталога не собираются одним запуском ([BUG-SCH-013](docs/audit.md#bug-sch-013)) |
+| 3 | `SCH-008-M1.patch` | 1407 | 5 | `6d5e2d1301f4573f8bc2cd0ea8cbf0b4` | `6e1b019` | шаг M1: шесть протоколов + шесть тонких адаптеров в `SCHEDULER.py` (+310/−4), каталог `PyScheduler/tests/scheduler_arch_tests/` |
+| 4 | `SCH-008-M1-review-alignment.patch` | 2456 | 41 | `28c34ea154793c812fa10fa30104af59` | `c125903` | выравнивание M0/M1 по практикам кодревью апстрима ([REV-SCH-001](docs/audit.md#rev-sch-001)) + схема снимков 2: 23 снимка перегенерированы, `SCHEDULER.py` +42/−9 (все вставки после строки 3269), докстринги, именованные константы, AST-проверки вместо архитектурозависимых тестов |
+| 5 | `SCH-008-docs-consolidation.patch` | 782 | 8 | `9c3e5119ee89e16e2c925d3e7ee3b838` | `4658327` | консолидация документации: удалены `RUNBOOK.md` и `INVENTORY-M1.md` из репозитория (содержимое растворено в §4.3–4.7 этого файла и в [SPEC §4.2–4.4, §8.1–8.2](docs/specs/SPEC-FEAT-SCH-008.md)), 16 ссылок в тестовом коде перепривязаны на разделы документации — все замены построчные, `SCHEDULER.py` остался 3584 строки, 11 legacy-якорей на месте |
+| — | `SCH-008-all-steps-combined.patch` | 4289 | 43 | `a15dd7d048da2fb00d1627e0d450f1f4` | `6c0aae2..4658327` | все пять шагов одним патчем (для быстрой проверки, не для подачи) |
+
+```bash
+git clone <репозиторий> && cd project_py_scheduler
+git checkout 6c0aae2                                   # dev
+for p in SCH-008-M0 SCH-008-fix-test-imports SCH-008-M1 SCH-008-M1-review-alignment \
+         SCH-008-docs-consolidation; do
+    git apply --check /path/$p.patch && git apply /path/$p.patch
+done
+python -m pytest PyScheduler/tests/baseline PyScheduler/tests/scheduler_arch_tests -q   # 104 passed
+```
+
+Проверено 2026-11-01 на свежем клоне `dev@6c0aae2`: пять патчей применяются по порядку (`git apply --check` + `git apply`), дерево после применения побайтово совпадает с веткой `4658327` (`diff -r` — 0 различий), все прогоны §4.5 зелёные (44/49/55/104 passed, полный прогон 264 passed / 1 существующее падение), снимки после регенерации байт-в-байт идентичны (`313565fb71b291ea695daf1920a53317`), мутационный контроль 13/13. После применения патчей в `PyScheduler/tests/` не остаётся ни одного md-файла. Тела коммитов содержат разделы «Что сделано / Проверки / Что НЕ меняется / Находки / Вопросы ревьюеру» — то есть описание будущего PR уже готово в истории ветки. Оговорка: в теле коммита `c125903` упомянуты рабочие артефакты `REVIEW-PRACTICES.md` и `SELF-AUDIT-vs-PR.md` — с ревизии 11 они растворены в [SPEC §2.1](docs/specs/SPEC-FEAT-SCH-008.md) (20 правил кодревью апстрима с цитатами) и в карточке [REV-SCH-001](docs/audit.md#rev-sch-001) (сверка собственной поставки по каждому правилу); история коммитов не переписывалась намеренно — иначе поехали бы md5 всех патчей. Если подача PR всё же понадобится: каждый шаг — отдельный PR от своей ветки (база `dev`), squash-слияние, описание по структуре [SPEC §2.1.3](docs/specs/SPEC-FEAT-SCH-008.md) («Что сделано» → «Проверки» → «Что НЕ меняется» → находки → вопросы ревьюеру); тела коммитов эти разделы уже содержат.
+
+### 4.7 Перепривязка якорей `:NNN`
+
+Документы ссылаются на конкретные строки `SCHEDULER.py`/`BS_MODULE.py`/`RES_GRID.py`, действительные для `dev@6c0aae2`. Порядок перепривязки при уходе `dev` или при правках чужого кода:
+
+1. Найти фактические строки по цитате кода, а не по прежнему номеру: `grep -n "<цитата>" PyScheduler/SCHEDULER.py`.
+2. Обновить номера одним коммитом с причиной («перепривязка якорей после <PR/коммита>»), не смешивая с содержательными правками.
+3. Тесты на номера строк **не пишутся** намеренно: проверяется содержимое — `test_documentation_quotes_present_in_module` сверяет 9 уникальных цитат кода из документации M1 (прежний `test_documentation_anchors_still_valid` проверял 11 жёстких номеров строк, из которых две цитаты встречались дважды: :1993/:2374 и :3029/:3126). Тест, завязанный на номер строки чужого кода, падал бы на любой правке владельца модуля, то есть был бы архитектурозависимым — такие ревью апстрима отклоняет (PR #37, [SPEC §2.1.1](docs/specs/SPEC-FEAT-SCH-008.md) A2).
+4. Новый код добавляется в конец файла именно поэтому: якоря на чужой код не сдвигаются (контроль — `test_m1_section_appended_after_legacy_code`). Урок, зафиксированный практикой: правка шапки модуля на две строки сдвигает все якоря ниже, поэтому изменения шапки делаются заменой «строка в строку» с проверкой `wc -l` и `git diff --numstat` до и после.
 
 ## 5. Основные компоненты
 
@@ -98,6 +263,11 @@ print(res['allocation'])
 | `BasicQosAwareScheduler` (:2704) | QoS (PR #39): ранжирование — HOL-группировка потоков + GBR-приоритет `1_000_000 + best_gbr_group` (:2764–2802); per-RBG выбор — произведение `hol_delay × gbr_weight × cqa_metric` (:2930; Coita или PF по `metric_mode`); docstring предупреждает: один bearer на UE | фабрика `'BasicQosAware'` (:262) |
 | `QosAwareScheduler` (:2960) | QoS (PR #39): приоритет по потокам (UE, QCI): GBR — масштабное смещение + urgency от HOL delay и packet delay budget (`QCI.get_delay_budget`), per-RBG выбор потока по метрике `sigmoid(hol, pdb) × pf` (:3128–3133); переопределяет `_logical_channel_multiplexing` (:3175–3222) | фабрика `'QosAware'` (:263) |
 | roadmap-комментарий (:3227–3245) | планы из самого кода: BufferManager, DCI + AllocationTracker, каноничный output, QoS, tie-break, исследование венгерского/жадного распределения RBG, оценка средней пропускной способности PF, защита голодающих UE | основа [features.md](docs/features.md) |
+| раздел M1 (:3247–3268), ветка `feat/SCH-008-M1-protocols` | шапка-комментарий «Интерфейсы стратегий и view-адаптеры»: что добавлено, какие правила миграции соблюдены (R1/R2/R5), почему раздел в конце файла, что намеренно отложено (целевая форма `CqiView` — CQI-трек C1, `abc.ABC`-иерархии аллокаторов — шаги M4+) | [SPEC-FEAT-SCH-008](docs/specs/SPEC-FEAT-SCH-008.md) §4.2–4.4, §5.3, §5.7 |
+| `CqiView` (:3278), `GridView` (:3296), `AmcView` (:3327), `BuffersView` (:3336), `StatsView` (:3355), `StateView` (:3376) | шесть `typing.Protocol` c `@runtime_checkable` — границы «что алгоритм вправе потреблять»: WB/SB CQI; операции и размеры сетки (`allocate_rbg`, `rbg_size`, `rbg_indices`, `total_rbg`, `prb_count`); bits/RB по CQI; наличие и статус буферов + HOL-задержка; throughput UE и per-QCI, GBR/PDB потока; чтение-запись RR-смещений | потребители переключаются не раньше шага M3 (правила R1/R2); в M1 только объявлены — контроль AST-проверкой `test_legacy_code_does_not_reference_views` |
+| `LegacyCqiView` (:3403), `LegacyGridView` (:3424), `LegacyAmcView` (:3457), `LegacyBuffersView` (:3469), `LegacyStatsView` (:3516), `LegacyStateView` (:3557) | шесть тонких адаптеров поверх текущих полей оркестратора: делегируют существующим методам (`cqi_map`, `lte_grid`, `amc`, `bs.buffer_manager`, `ue.average_throughput`/`qci_tput_tracker`, `rr_*_offset`) и не дублируют логику (R5); `LegacyStatsView.users_by_id` типизирован `Dict[int, Any]`, так как `UserEquipment` модуль не импортирует | в M1 создаются только тестами (`tests/scheduler_arch_tests/`), в рантайм планировщика не внедрены |
+
+Строки 3246–3584 существуют только в ветке `feat/SCH-008-M1-protocols` (коммит `4658327`, поставка патчами — §4.6); в `dev@6c0aae2` файл заканчивается на строке 3245. Инвентаризация фактических входов и побочных эффектов всех восьми алгоритмов — [SPEC §4.2](docs/specs/SPEC-FEAT-SCH-008.md), соответствие входов протоколам M1 — [SPEC §4.3](docs/specs/SPEC-FEAT-SCH-008.md), гарантии шага и контролирующие их тесты — [SPEC §4.4](docs/specs/SPEC-FEAT-SCH-008.md).
 
 Матрица переопределений (различия алгоритмов локальны — базовый класс реализует весь цикл):
 
@@ -135,14 +305,45 @@ print(res['allocation'])
 - Поведенческие нюансы: двойное нулевое обновление EWMA у незапланированных UE существовало до `6c0aae2` ([BUG-SCH-001](docs/audit.md#bug-sch-001), закрыт побочно с qci-трекером PR #39 — проверено замером), «залипание» двух счётчиков статистики в пустом TTI ([BUG-SCH-004](docs/audit.md#bug-sch-004)), сохранение устаревшего CQI при невалидном отчёте ([BUG-SCH-002](docs/audit.md#bug-sch-002)), крах этапа 7 при CQI=0 у UE с живым буфером воспроизводился на `ae9db40`, на `6c0aae2` через `schedule()` недостижим ([BUG-SCH-007](docs/audit.md#bug-sch-007)), откат `ALLOCATE_RBG` освобождает RB без проверки владельца ([BUG-SCH-009](docs/audit.md#bug-sch-009), воспроизведено), `available_algorithms()` (:277) возвращает два имени, которые фабрика не принимает ([BUG-SCH-010](docs/audit.md#bug-sch-010)) — детали и статусы в [audit.md](docs/audit.md).
 - Инфраструктура: тестовый набор на `dev` неработоспособен ([BUG-SCH-008](docs/audit.md#bug-sch-008)); CI в репозитории отсутствует.
 - Открытые вопросы: кто должен потреблять возврат `schedule()` и зачем `statistics` всегда пуст (:1030, [OPT-SCH-005](docs/audit.md#opt-sch-005)); судьба незакрытых веток `feature/HARQ`, `feature/AMC`, `feature/drl-scheduler` относительно `dev` — требует отдельного уточнения.
+- Сводка запросов к владельцу репозитория и авторам смежных модулей — [audit.md §3](docs/audit.md#3-что-пока-не-удалось-понять): канонический способ запуска `ruff` и отсутствие `src` в `.ruff.toml` ([CFG-SCH-001](docs/audit.md#cfg-sch-001)); версия интерпретатора для прогонов (3.12.9 в окружении владельца против валидированной 3.11.2); планы по CI (в репозитории отсутствует); готовый текст запроса владельцу `BS_MODULE` по [BUG-SCH-012](docs/audit.md#bug-sch-012); подтверждение двух решений карточки [REV-SCH-001](docs/audit.md#rev-sch-001) (AST-проверки вместо архитектурозависимых тестов на номера строк; схема снимков 2 с побайтовой совместимостью со схемой 1).
 
 ## 8. Связанные материалы
 
-- [Диаграммы](docs/diagrams.md) — контекст и классы (AS-IS), последовательность вызовов TTI, переходы состояний, черновик TO-BE
-- [Ревизия](docs/audit.md) — 18 наблюдений (BUG-SCH-001…011, OPT-SCH-002…006, DOC-SCH-001…002) с доказательствами, замерами и статусами; таблица сопоставления прежних ID — там же
-- [План развития](docs/features.md) — карточки FEAT-SCH-001…009 (две из них — крупные архитектурные разработки: FEAT-SCH-008 с отдельной спецификацией и FEAT-SCH-009 в статусе черновика), связи с issues/PR/ветками, межмодульные зависимости
-- [Спецификация SPEC-FEAT-SCH-008](docs/specs/SPEC-FEAT-SCH-008.md) — план реализации разделения Ranker/Allocator (v4): контракты (включая `MultiplexingPolicy` и propose→validate→commit), правила миграции R1–R8, атомарные зелёные шаги M0–M8 (M4c/M4d, M5a/M5b, M8a–M8e), CQI-трек C0–C4, регрессионная матрица
-- [Definition of Done](docs/process/DOD-FEAT-SCH-008.md) — критерии готовности атомарного PR (SPEC §2 + практика ревью репозитория), gate шага, статус выполнения M0 с подтверждениями
-- [ROADMAP](docs/process/ROADMAP-SCH.md) — статус пунктов развития: TODO-список из кода (:3227–3245), шаги M0–M8e и CQI-трек, смежные issues, закрытые и открытые пункты
-- [CHANGELOG](docs/process/CHANGELOG-DOC-SCH-001.md) — ревизии комплекта DOC-SCH-001 (1–9) и работы FEAT-SCH-008 вне комплекта
+Комплект документации модуля — четыре файла по ТЗ плюс спецификация архитектурной фичи. Других md-файлов ни в комплекте, ни в репозитории модуля не ведётся: прежние процессные документы (`docs/process/`: DoD, ROADMAP, CHANGELOG) и рабочие файлы поставки (`RUNBOOK.md`, `INVENTORY-M1.md` в каталогах тестов) с ревизии 11 растворены в этих пяти — куда именно, указано ниже.
+
+- [Диаграммы](docs/diagrams.md) — контекст и классы (AS-IS), последовательность вызовов TTI, переходы состояний, черновик TO-BE; схема сравнения снимков шага M0 — [SPEC §8.2](docs/specs/SPEC-FEAT-SCH-008.md)
+- [Ревизия](docs/audit.md) — 24 наблюдения (BUG-SCH-001…013, OPT-SCH-002…006, DOC-SCH-001…004, REV-SCH-001, CFG-SCH-001) с доказательствами, замерами и статусами; таблица сопоставления прежних ID и сводка запросов владельцам (§3) — там же
+- [План развития](docs/features.md) — карточки FEAT-SCH-001…009 (две из них — крупные архитектурные разработки: FEAT-SCH-008 с отдельной спецификацией и FEAT-SCH-009 в статусе черновика), дорожная карта модуля (§1.1), связи с issues/PR/ветками, межмодульные зависимости
+- [Спецификация SPEC-FEAT-SCH-008](docs/specs/SPEC-FEAT-SCH-008.md) — план реализации разделения Ranker/Allocator (v4): правила миграции R1–R8 и Definition of Done атомарного PR (§2), практика кодревью репозитория и операционный чек-лист поставки шага (§2.1), AS-IS-матрица и инвентаризация входов восьми алгоритмов (§4, §4.2–4.4), целевые контракты (§5), атомарные зелёные шаги M0–M8e и CQI-трек C0–C4 (§8), фактический статус шагов M0/M1 с подтверждениями (§8.3), регрессионная матрица (§9)
 - [`Documentation/doc_scheduler_v2.1.0.md`](https://github.com/sherokiddo/project_py_scheduler/blob/6c0aae2/PyScheduler/Documentation/doc_scheduler_v2.1.0.md) — авторская документация модуля (PR #26, после не обновлялась)
+
+**Где теперь живут прежние отдельные документы:**
+
+| Прежний файл | Куда перенесено |
+|---|---|
+| `docs/process/DOD-FEAT-SCH-008.md` (критерии готовности атомарного PR, gate шага, статусы M0/M1) | [SPEC §2](docs/specs/SPEC-FEAT-SCH-008.md) (правила R1–R8, DoD), [SPEC §2.1](docs/specs/SPEC-FEAT-SCH-008.md) (чек-лист с практикой кодревью репозитория), [SPEC §8.1](docs/specs/SPEC-FEAT-SCH-008.md) (gate), [SPEC §8.3](docs/specs/SPEC-FEAT-SCH-008.md) (фактические статусы и подтверждения по шагам) |
+| `docs/process/ROADMAP-SCH.md` (статусы пунктов развития: TODO из кода :3227–3245, шаги M0–M8e, CQI-трек, смежные issues) | [features.md §1.1](docs/features.md) (дорожная карта модуля: TODO из кода, шаги фичи, issues репозитория) и карточки FEAT-SCH-001…009; шаги M0–M8e и трек C0–C4 — [SPEC §8](docs/specs/SPEC-FEAT-SCH-008.md) |
+| `docs/process/CHANGELOG-DOC-SCH-001.md` (ревизии комплекта, работы вне комплекта) | таблица ревизий ниже; работы FEAT-SCH-008 по шагам — §4.3–4.7 этого файла и [SPEC §8.3](docs/specs/SPEC-FEAT-SCH-008.md) |
+| `PyScheduler/tests/baseline/RUNBOOK.md` (окружение, команды, состав снимков, порядок обновления, известные ограничения AS-IS) | §4.3–4.5 и §4.7 этого файла; правила сравнения снимков — [SPEC §8.2](docs/specs/SPEC-FEAT-SCH-008.md) |
+| `PyScheduler/tests/scheduler_arch_tests/INVENTORY-M1.md` (инвентаризация входов и побочных эффектов восьми алгоритмов) | [SPEC §4.2](docs/specs/SPEC-FEAT-SCH-008.md) (инвентаризация), §4.3 (соответствие входов протоколам M1), §4.4 (гарантии шага и контролирующие тесты) |
+| `docs/specs/OPT-SCH-001.md` (черновик спецификации к планёрке 2026-10-17, статус «заменён») | содержимое давно заменено [SPEC-FEAT-SCH-008](docs/specs/SPEC-FEAT-SCH-008.md) v4; прежние обозначения OPT-SCH-001/007 сохранены в таблице соответствия [audit.md §1](docs/audit.md), соответствие старого плана T1–T7 шагам M0–M8e — [SPEC §8](docs/specs/SPEC-FEAT-SCH-008.md); файл удалён в ревизии 11 |
+
+Отчёты по неделям (`docs/week_01_report.md`, `docs/week_02_report.md`, `docs/week_03_report.md`) — сданные материалы учебного процесса: в комплект документации модуля не входят, не обновляются и правилом «четыре файла плюс спецификация» не затрагиваются. Отчёты за недели 4–5 не составлялись по решению ответственного от 2026-11-01.
+
+### История ревизий комплекта
+
+| Рев. | Дата | База кода | Основное изменение |
+|---|---|---|---|
+| 1 | 2026-10-10 | `ae9db40` | Первый состав четырёх документов: README модуля, диаграммы, ревизия (audit), план развития (features) |
+| 2 | после 2026-10-18 | `6c0aae2` | Добавлена спецификация [SPEC-FEAT-SCH-008](docs/specs/SPEC-FEAT-SCH-008.md) (v1→v2 по замечаниям ревью: атомарность аллокации, правило «один писатель» для состояния, реестр пар стратегий, wb/sb как политика стратегий); база перепривязана `ae9db40` → `6c0aae2` (PR #39 QoS слит) — все якоря пересчитаны, QoS-классы вошли в AS-IS-схемы и матрицу алгоритмов; статусы BUG-SCH-001 и BUG-SCH-007 обновлены по контрольным замерам |
+| 3 | октябрь 2026 | `6c0aae2` | Полная перепроверка: все прогоны повторены (золотой сценарий побитово, воспроизведения BUG-SCH-001/009, варианты A/B/C тестового набора, xfail-вариант); исправлены ~40 неточных якорей после сдвига строк PR #39; новая карточка [BUG-SCH-010](docs/audit.md#bug-sch-010); «шесть алгоритмов» → восемь; три stateDiagram исправлены для парсера Mermaid; ссылки на карточки переведены на якоря |
+| 4 | октябрь 2026 | `6c0aae2` | Две архитектурные записи перерегистрированы как фичи — [FEAT-SCH-008](docs/features.md#feat-sch-008) и [FEAT-SCH-009](docs/features.md#feat-sch-009) (новые сущности, контракты и точки расширения — фича, даже без изменения внешнего поведения); критерий «фича/оптимизация» зафиксирован во введении features §1; прежние обозначания — в таблице соответствия audit §1 |
+| 5 | октябрь 2026 | `6c0aae2` | Атрибуция запросов в features §3 приведена к проверяемым источникам GitHub (issues, тела и комментарии PR, CODEOWNERS, git log): issues #27–#31 — автор владелец репозитория, мне не назначен ни один; две строки без подтверждённого источника удалены; устная договорённость по направлению srsRAN помечена «не проверено» |
+| 6 | октябрь 2026 | `6c0aae2` | SPEC v3 по итогам архитектурного ревью v2: недельные задачи T1–T7 заменены атомарными зелёными шагами M0–M8 со строгим gate (§8); правила миграции R1–R8 и минимальный DoD атомарного PR (§2); политика CQI — независимая граница, трек C0–C4 (§5.7); внутренний `AllocationResult` для per-flow решений QoS; снято ложное утверждение об атомарности `ALLOCATE_RBG` — новая карточка [BUG-SCH-009](docs/audit.md#bug-sch-009) с воспроизведением; наблюдений в audit — 17 |
+| 7 | 2026-10-23 | `6c0aae2` | SPEC v4 по итогам ревью v3: четыре замечания P1 (экспериментальный путь — propose→validate→commit с точкой запуска после этапа PDCCH; контракт `MultiplexingPolicy` в M7b; противоречие порядка M1a/M3 снято самостоятельным подключением prefilter; неатомарные шаги разбиты M4c→M4c+M4d, M5→M5a+M5b, M8→M8a–M8e) и четыре уточнения границ; история замечаний — SPEC §11.1/§11.2 |
+| 8 | 2026-10-23 | `6c0aae2` | Сверка комплекта с фактически выполненным шагом M0: новая карточка [BUG-SCH-011](docs/audit.md#bug-sch-011) — классовые кэши `ChannelModel` (CHANNEL_MODEL.py :158–160) не сбрасываются между прогонами в одном процессе (воспроизведено, расхождение давал `O2I_INFO`); в SPEC — оговорка «M0 подготовлен до согласования v4» и очистка кэшей в методике full-SIM-снимков; в features §2 — запрос владельцу модели канала; наблюдений — 18 |
+| 9 | 2026-10-24 | `6c0aae2` | Добавлены процессные документы `docs/process/` (DoD, ROADMAP, CHANGELOG — с ревизии 11 растворены в комплекте); разобрана практика изменений репозитория по истории PR #20/#21/#26/#32/#37/#38/#39 и issues — критерии внесены в DoD; объём M0-патча сужен до каталога тестов модуля (39 файлов вместо 41: корневые `conftest.py`/`pytest.ini` убраны, автономность каталога обеспечена его conftest по приёму `layered_buffer_tests`); код baseline вычищен до 0 ошибок `ruff check --config .ruff.toml` |
+| 10 | 2026-11-01 | `6c0aae2` | Сверка комплекта с фактически выполненными шагами M0 (доработка) и M1. M0: патч перегенерирован — во все 27 снимков добавлено информационное поле `meta.env` (python/numpy/pytest, исключено из сравнения), md5 `841e21a5…` → `eb7a8b81…`, регенерация байт-в-байт стабильна, sha256 истории allocation full-SIM не изменился. M1: шесть `@runtime_checkable`-протоколов и шесть тонких legacy-адаптеров (раздел в конце `SCHEDULER.py`, номера строк legacy-кода сохранены), потребители не переключены (R1/R2), добавлены `tests/scheduler_arch_tests/`; шапка модуля приведена к факту — [DOC-SCH-003](docs/audit.md#doc-sch-003) закрыт. Новые карточки: [BUG-SCH-012](docs/audit.md#bug-sch-012) (QoS-планировщики падают на `SimpleBufferManager`, воспроизведено; сайты :2790/:2844/:3029/:3126), [BUG-SCH-013](docs/audit.md#bug-sch-013) (не уникальное имя модуля `conftest` — закрыто `baseline_harness.py`/`arch_support.py`, коммит `1556d48`), [DOC-SCH-004](docs/audit.md#doc-sch-004) (copy-paste docstring/verbose шести заглушек `_apply_pdsch_estimation`); наблюдений — 22. Решение ответственного от 2026-11-01: PR не подаются, разработка по плану локально, отчёты за недели 4–5 не составляются |
+| 11 | 2026-11-01 | `6c0aae2` + ветка `4658327` | Эта ревизия. (1) Комплект приведён к четырём файлам по ТЗ плюс спецификация: процессные документы и рабочие файлы поставки растворены (таблица выше), `docs/process/` и `docs/specs/OPT-SCH-001.md` удалены; история ревизий — эта таблица. (2) Из репозитория модуля удалены `RUNBOOK.md` и `INVENTORY-M1.md` (коммит `4658327`): 16 ссылок в тестовом коде перепривязаны на разделы документации, все замены построчные — `SCHEDULER.py` остался 3584 строки, 11 legacy-якорей на месте; в `PyScheduler/tests/` md-файлов не осталось. (3) Пересмотрены **все 28 PR** апстрима (открытые и закрытые) — карточка [REV-SCH-001](docs/audit.md#rev-sch-001): 20 правил кодревью, 9 нарушений в собственной поставке исправлено коммитом `c125903` (докстринги на всех 128+56 узлах, именованные константы вместо магических чисел, AST-проверки вместо архитектурозависимых тестов на номера строк, схема снимков 2), два решения вынесены на подтверждение владельца. (4) Пробел покрытия снимков, найденный инвентаризацией M1 (`bs_buffer_size`, `instant_rate` не фиксировались), закрыт расширением схемы снимков в той же ветке — побайтовая совместимость со схемой 1 проверена ([SPEC §8.2](docs/specs/SPEC-FEAT-SCH-008.md)). (5) Новая карточка [CFG-SCH-001](docs/audit.md#cfg-sch-001) — в `.ruff.toml` не задан `src`, результат линтера зависит от каталога запуска (замер: 1095 против 1102 замечаний, I001 32 → 39); запрос владельцу в audit §3. (6) В [BUG-SCH-012](docs/audit.md#bug-sch-012) добавлен готовый текст запроса владельцу `BS_MODULE`. (7) Пятый патч `SCH-008-docs-consolidation.patch`, суммарный переименован в `SCH-008-all-steps-combined.patch`; цепочка из пяти патчей воспроизведена на свежем клоне `dev@6c0aae2` — дерево побайтово совпадает с веткой `4658327`. Наблюдений в audit — 24 |
+
+**Правила ведения комплекта.** Любое изменение — новая строка в таблице ревизий и повторный прогон проверок: внутренние ссылки и якоря (0 ошибок), соответствие разделов и полей карточек шаблонам ТЗ (audit — 8 полей, features — 11) и дословность блоков «Правила:» (0 отклонений), валидация ссылок `:NNN` против текущей базы кода (NO_TOKEN = 0), парсинг mermaid-блоков (headless), сканы на личные имена, упоминания встреч и внешних файлов как источников, маркеры генерации и гомоглифы. При уходе `dev` с `6c0aae2` — перепривязка якорей по §4.7, обновление «Проверено по коду» в шапках, повторные прогоны затронутых измерений и регенерация снимков (§4.3). SPEC-FEAT-SCH-008 v4 содержательно не меняется до формального согласования; после завершения фичи (шаг M8e) его содержимое переносится в README/diagrams/features, а спецификация остаётся историей проектирования.
